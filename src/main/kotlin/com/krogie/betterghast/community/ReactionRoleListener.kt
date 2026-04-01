@@ -170,11 +170,7 @@ object ReactionRoleListener {
                         .setMaxValues(panel.entries.size)
 
                     for (entry in panel.entries) {
-                        val optBuilder = net.dv8tion.jda.api.components.selects.SelectOption
-                            .of(entry.label, entry.roleId.toString())
-                        menuBuilder.addOptions(
-                            if (entry.description != null) optBuilder.withDescription(entry.description) else optBuilder
-                        )
+                        menuBuilder.addOption(entry.label, entry.roleId.toString(), entry.description ?: "")
                     }
                     // Send as separate message with select menu
                     channel.sendMessageComponents(container, ActionRow.of(menuBuilder.build())).useComponentsV2()
