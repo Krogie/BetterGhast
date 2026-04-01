@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>8192</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <neverBlock>true</neverBlock>
+        <includeCallerData>false</includeCallerData>
+        <appender-ref ref="STDOUT"/>
+    </appender>
+
+    <logger name="com.krogie.betterghast" level="INFO"/>
+
+    <logger name="net.dv8tion.jda" level="INFO"/>
+    <logger name="okhttp3" level="WARN"/>
+    <logger name="org.eclipse.jetty" level="WARN"/>
+
+    <root level="INFO">
+        <appender-ref ref="ASYNC"/>
+    </root>
+</configuration>
