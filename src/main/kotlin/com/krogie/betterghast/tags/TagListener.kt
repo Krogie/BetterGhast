@@ -35,6 +35,7 @@ object TagListener {
         jda.listener<MessageReceivedEvent> { onPrefix(it) }
         jda.onCommandAutocomplete("tags", "name") { onAutocomplete(it) }
         jda.onCommand("tags") { onSlashCommand(it as SlashCommandInteractionEvent) }
+        jda.onCommand("help") { onHelp(it as SlashCommandInteractionEvent) }
         jda.listener<ModalInteractionEvent> { onModal(it) }
         jda.listener<ButtonInteractionEvent> { onButton(it) }
     }
@@ -114,7 +115,6 @@ object TagListener {
             "stats" -> onTagStats(event)
             "info" -> onTagInfo(event)
             "export" -> onExportTags(event)
-            "help" -> onHelp(event)
             "analytics" -> onAnalytics(event)
             "permissions" -> onPermissions(event)
         }
@@ -335,31 +335,27 @@ object TagListener {
 
     private fun onHelp(event: SlashCommandInteractionEvent) {
         val help = """
-            ### BetterGhast v3.0 — Commands
+            ### BetterGhast v3.0
+
+            **[Full Documentation](https://betterghast.krogie.com/docs/)** — Detailed guides for every feature
 
             **Tags** — `!t keyword` or slash commands
             `/tags manage` `/tags show` `/tags search` `/tags stats`
             `/tags info` `/tags export` `/tags analytics` `/tags permissions`
 
             **Moderation**
-            `/warn @user reason` — Issue warning
-            `/warnings @user` — View warnings
-            `/clearwarning id` — Remove warning
-            `/autoresponse add|remove|list|toggle` — Auto-responses
-            `/antispam toggle|ratelimit|linkfilter|invitefilter|whitelist|status`
+            `/warn` `/warnings` `/clearwarning` — Warning system
+            `/autoresponse` — Auto-response triggers
+            `/antispam` — Spam protection
 
             **Community**
-            `/welcome channel|message|leave|autorole|dm|test|status`
-            `/rolepanel create|addrole|send|delete|list` — Reaction roles
-            `/ticket create|close|claim|transcript|setup`
-            `/rank [@user]` — View level & XP
-            `/top [page]` — Server leaderboard
-            `/xp toggle|addrole|removerole|multiplier|status`
-            `/poll question options [duration] [anonymous] [multichoice]`
+            `/welcome` — Welcome & leave messages
+            `/rolepanel` — Reaction roles
+            `/ticket` — Support tickets
+            `/rank` `/top` `/xp` — Leveling & XP
+            `/poll` — Polls & voting
 
-            **Template Placeholders:** `{user}` `{channel}` `{server}` `{date}` `{mention}`
-
-            [Website](https://betterghast.krogie.com) — [GitHub](https://github.com/Krogie/BetterGhast)
+            [Website](https://betterghast.krogie.com) — [Docs](https://betterghast.krogie.com/docs/) — [GitHub](https://github.com/Krogie/BetterGhast)
         """.trimIndent()
 
         event.replyContainer(help)

@@ -68,7 +68,6 @@ class App(private val config: AppConfig) {
                 SubcommandData("info", "Show detailed info about a specific tag.")
                     .addOption(OptionType.STRING, "name", "The tag keyword.", true, true),
                 SubcommandData("export", "Export all tags as JSON."),
-                SubcommandData("help", "Show all available commands."),
                 SubcommandData("analytics", "View tag usage analytics."),
                 SubcommandData("permissions", "Set or view tag role restrictions.")
                     .addOption(OptionType.STRING, "name", "The tag keyword.", true, true)
@@ -208,10 +207,13 @@ class App(private val config: AppConfig) {
             .addOption(OptionType.BOOLEAN, "anonymous", "Hide voter names.", false)
             .addOption(OptionType.BOOLEAN, "multichoice", "Allow multiple choices.", false)
 
+        // ── /help ──
+        val helpCmd = Commands.slash("help", "Show all BetterGhast commands and documentation.")
+
         val allCommands = listOf(
             tagsCmd, autoResponseCmd, warnCmd, warningsCmd, clearWarningCmd,
             antispamCmd, welcomeCmd, rolepanelCmd, ticketCmd,
-            rankCmd, topCmd, xpCmd, pollCmd
+            rankCmd, topCmd, xpCmd, pollCmd, helpCmd
         )
 
         for (guild in jda.guilds) {
