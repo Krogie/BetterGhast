@@ -52,7 +52,7 @@ class App(private val config: AppConfig) {
             )
 
         for (guild in jda.guilds) {
-            if (guild.idLong in config.allowedGuilds) {
+            if (config.allowedGuilds.isEmpty() || guild.idLong in config.allowedGuilds) {
                 guild.upsertCommand(commandData).queue(
                     { logger.info("Commands deployed for ${guild.id} (${guild.name})") },
                     { logger.error("Failed to deploy commands for ${guild.id} (${guild.name})", it) }
