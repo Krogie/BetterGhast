@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Documentation | BetterGhast</title>
+  <meta name="description" content="Full documentation for the BetterGhast Discord Bot. Commands, features, setup guides." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      line-height: 1.7;
+    }
+    .page { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: #161b22;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      padding: 2rem 1.5rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+    }
+    .sidebar-logo {
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #B5C8B4, #8fa88e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+    }
+    .sidebar-version {
+      font-size: 0.75rem;
+      color: #8b949e;
+      margin-bottom: 2rem;
+    }
+    .sidebar-section {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8b949e;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .sidebar a {
+      display: block;
+      color: #c9d1d9;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.3rem 0.5rem;
+      border-radius: 6px;
+      margin-bottom: 2px;
+    }
+    .sidebar a:hover { background: rgba(255,255,255,0.06); color: #B5C8B4; }
+    .sidebar-back {
+      display: block;
+      color: #8b949e;
+      text-decoration: none;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    .sidebar-back:hover { color: #B5C8B4; }
+
+    /* Content */
+    .content {
+      margin-left: 260px;
+      padding: 3rem 4rem;
+      max-width: 900px;
+      flex: 1;
+    }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #B5C8B4, #8fa88e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      color: #e6edf3;
+    }
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.5rem;
+      color: #e6edf3;
+    }
+    p, li { color: #c9d1d9; margin-bottom: 0.75rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    code {
+      background: rgba(255,255,255,0.08);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.85rem;
+      color: #B5C8B4;
+    }
+    pre {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    pre code { background: none; padding: 0; color: #c9d1d9; }
+    .cmd-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    .cmd-table th, .cmd-table td {
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: #c9d1d9;
+      font-size: 0.9rem;
+    }
+    .cmd-table th { color: #8b949e; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .cmd-table code { font-size: 0.8rem; }
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+    }
+    .badge-mod { background: rgba(210,153,34,0.15); color: #d29922; }
+    .badge-admin { background: rgba(248,81,73,0.15); color: #f85149; }
+    .badge-public { background: rgba(63,185,80,0.15); color: #3fb950; }
+    .tip {
+      background: rgba(181,200,180,0.08);
+      border-left: 3px solid #B5C8B4;
+      padding: 0.75rem 1rem;
+      border-radius: 0 6px 6px 0;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+    .tip strong { color: #B5C8B4; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { margin-left: 0; padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <a href="/" class="sidebar-back">&larr; Back to Home</a>
+    <div class="sidebar-logo">BetterGhast</div>
+    <div class="sidebar-version">v3.0 Documentation</div>
+
+    <div class="sidebar-section">Getting Started</div>
+    <a href="#about">About BetterGhast</a>
+    <a href="#setup">Setup &amp; Installation</a>
+    <a href="#permissions">Required Permissions</a>
+
+    <div class="sidebar-section">Tags</div>
+    <a href="#tags-overview">Overview</a>
+    <a href="#tags-manage">Create &amp; Edit</a>
+    <a href="#tags-templates">Templates &amp; Placeholders</a>
+    <a href="#tags-permissions">Role Permissions</a>
+    <a href="#tags-analytics">Analytics</a>
+    <a href="#tags-other">Search, Stats, Export</a>
+
+    <div class="sidebar-section">Moderation</div>
+    <a href="#warnings">Warning System</a>
+    <a href="#autoresponse">Auto-Responses</a>
+    <a href="#antispam">Anti-Spam</a>
+
+    <div class="sidebar-section">Community</div>
+    <a href="#welcome">Welcome Messages</a>
+    <a href="#reactionroles">Reaction Roles</a>
+    <a href="#tickets">Ticket System</a>
+    <a href="#leveling">Leveling &amp; XP</a>
+    <a href="#polls">Polls</a>
+
+    <div class="sidebar-section">Reference</div>
+    <a href="#config">Configuration</a>
+    <a href="#all-commands">All Commands</a>
+  </nav>
+
+  <!-- Content -->
+  <main class="content">
+
+    <h1>Documentation</h1>
+    <p>Complete reference for BetterGhast v3.0. Everything you need to set up, configure, and use the bot on your Discord server.</p>
+
+    <!-- ═══════ GETTING STARTED ═══════ -->
+
+    <h2 id="about">About BetterGhast</h2>
+    <p>BetterGhast is an all-in-one Discord server management bot. It started as a tag management tool and has grown into a full-featured bot covering moderation, community engagement, and automation.</p>
+    <p>Core areas:</p>
+    <ul>
+      <li><strong>Tag System</strong> &mdash; Reusable message snippets with templates, permissions, and analytics</li>
+      <li><strong>Moderation</strong> &mdash; Warning system with auto-escalation, auto-response triggers, anti-spam protection</li>
+      <li><strong>Community</strong> &mdash; Welcome messages, reaction roles, ticket system, leveling with XP, polls</li>
+    </ul>
+    <p>BetterGhast is built with Kotlin, JDA 6, and MariaDB. It runs as a Docker container on any Linux server.</p>
+
+    <h2 id="setup">Setup &amp; Installation</h2>
+    <h3>Quick Deploy (Docker)</h3>
+    <pre><code>git clone https://github.com/Krogie/BetterGhast.git
+cd BetterGhast
+bash deploy.sh</code></pre>
+    <p>The deploy script handles everything: Docker installation, database setup, and bot configuration. It will ask you for your Discord bot token.</p>
+
+    <h3>Discord Developer Portal</h3>
+    <ol>
+      <li>Go to <a href="https://discord.com/developers/applications" style="color:#B5C8B4">discord.com/developers/applications</a></li>
+      <li>Create an application or select your existing one</li>
+      <li>Under <strong>Bot</strong>, enable <strong>Message Content Intent</strong> and <strong>Server Members Intent</strong></li>
+      <li>Under <strong>OAuth2 &gt; URL Generator</strong>, select scopes <code>bot</code> + <code>applications.commands</code></li>
+      <li>Select the required permissions (see below) and invite the bot</li>
+    </ol>
+
+    <h2 id="permissions">Required Permissions</h2>
+    <table class="cmd-table">
+      <tr><th>Permission</th><th>Used For</th></tr>
+      <tr><td>Send Messages</td><td>All features (tags, responses, notifications)</td></tr>
+      <tr><td>Manage Messages</td><td>Deleting <code>!t</code> prefix commands, anti-spam message deletion</td></tr>
+      <tr><td>Manage Channels</td><td>Ticket system (creating/deleting ticket channels)</td></tr>
+      <tr><td>Manage Roles</td><td>Reaction roles, leveling roles, auto-role on join</td></tr>
+      <tr><td>Moderate Members</td><td>Warning escalation (muting users via timeout)</td></tr>
+      <tr><td>Kick Members</td><td>Warning escalation (kicking at threshold)</td></tr>
+      <tr><td>Ban Members</td><td>Warning escalation (banning at threshold)</td></tr>
+      <tr><td>Embed Links</td><td>Rich tag content display</td></tr>
+      <tr><td>Attach Files</td><td>Tag export, ticket transcripts</td></tr>
+      <tr><td>Read Message History</td><td>Ticket transcripts, anti-spam</td></tr>
+    </table>
+
+    <!-- ═══════ TAGS ═══════ -->
+
+    <h2 id="tags-overview">Tags &mdash; Overview</h2>
+    <p>Tags are reusable message snippets that can be triggered by anyone in your server. They support full Discord markdown, media URLs, templates with placeholders, and role-based access control.</p>
+
+    <div class="tip"><strong>Tip:</strong> Anyone can trigger tags with <code>!t keyword</code> in chat. The bot deletes the trigger message and posts the tag content. Slash commands require the Manage Messages permission.</div>
+
+    <h3>Tag Styles</h3>
+    <ul>
+      <li><strong>Accent Embed</strong> &mdash; Wrapped in a container with your custom accent color. Supports headers (lines starting with <code>###</code>) and media galleries.</li>
+      <li><strong>No Accent</strong> &mdash; Same container formatting but without the colored accent bar.</li>
+      <li><strong>Raw Message</strong> &mdash; Sent as a plain text message with no embed. Useful for simple text responses.</li>
+    </ul>
+
+    <h2 id="tags-manage">Create &amp; Edit Tags</h2>
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/tags manage name:&lt;keyword&gt;</code></td><td>Opens a modal to create a new tag or edit an existing one</td></tr>
+      <tr><td><code>/tags manage name:&lt;keyword&gt; remove:true</code></td><td>Deletes a tag (with confirmation prompt)</td></tr>
+    </table>
+    <p>The modal lets you set:</p>
+    <ul>
+      <li><strong>Keywords</strong> &mdash; Comma-separated list of trigger words. The first one is the primary keyword. Example: <code>nolfg, m, lfg</code></li>
+      <li><strong>Content</strong> &mdash; The tag message. Supports full Discord markdown, headers (<code>###</code>), and trailing media URLs.</li>
+      <li><strong>Style</strong> &mdash; Choose Accent, No Accent, or Raw.</li>
+    </ul>
+
+    <h3>Media URLs</h3>
+    <p>If your tag content ends with a URL separated by a blank line, it will be displayed as an embedded media gallery (images, GIFs, videos).</p>
+    <pre><code>### Welcome to our server!
+Please read the rules in #rules before chatting.
+
+https://example.com/welcome-banner.png</code></pre>
+
+    <h2 id="tags-templates">Templates &amp; Placeholders</h2>
+    <p>Tags support dynamic placeholders that are replaced when the tag is triggered:</p>
+    <table class="cmd-table">
+      <tr><th>Placeholder</th><th>Replaced With</th></tr>
+      <tr><td><code>{user}</code></td><td>Display name of the user who triggered the tag</td></tr>
+      <tr><td><code>{user.tag}</code></td><td>Username (e.g. john_doe)</td></tr>
+      <tr><td><code>{user.mention}</code></td><td>User mention (clickable @mention)</td></tr>
+      <tr><td><code>{user.id}</code></td><td>User's Discord ID</td></tr>
+      <tr><td><code>{channel}</code></td><td>Name of the channel where the tag was triggered</td></tr>
+      <tr><td><code>{channel.mention}</code></td><td>Channel mention (clickable #link)</td></tr>
+      <tr><td><code>{server}</code></td><td>Server name</td></tr>
+      <tr><td><code>{server.members}</code></td><td>Total member count of the server</td></tr>
+      <tr><td><code>{date}</code></td><td>Current date and time (dd.MM.yyyy HH:mm)</td></tr>
+      <tr><td><code>{mention}</code></td><td>Mention of a user referenced in the trigger</td></tr>
+    </table>
+
+    <div class="tip"><strong>Example:</strong> A tag with content <code>Hey {user.mention}, welcome to {server}!</code> will output <code>Hey @John, welcome to My Server!</code> when triggered.</div>
+
+    <h2 id="tags-permissions">Role Permissions</h2>
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/tags permissions name:&lt;keyword&gt;</code></td><td>View the current role restriction for a tag</td></tr>
+      <tr><td><code>/tags permissions name:&lt;keyword&gt; role:@Role</code></td><td>Restrict the tag to members with this role</td></tr>
+    </table>
+    <p>When a tag has a role restriction, only members with that role can trigger it via <code>!t</code>. Members without the role will get no response (silent fail). To remove a restriction, set the role to @everyone.</p>
+
+    <h2 id="tags-analytics">Tag Analytics</h2>
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/tags analytics</code></td><td>View usage analytics for all tags</td></tr>
+    </table>
+    <p>Shows:</p>
+    <ul>
+      <li><strong>Top Users</strong> &mdash; Who uses tags the most (top 10)</li>
+      <li><strong>Usage Trends</strong> &mdash; Daily usage for the last 7 days</li>
+      <li><strong>Unused Tags</strong> &mdash; Tags that have never been triggered (cleanup suggestions)</li>
+    </ul>
+
+    <h2 id="tags-other">Search, Stats &amp; Export</h2>
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/tags show</code></td><td>List all tags with pagination (15 per page)</td></tr>
+      <tr><td><code>/tags search query:&lt;term&gt;</code></td><td>Search tags by keyword or content</td></tr>
+      <tr><td><code>/tags stats</code></td><td>Usage statistics with visual bar chart (top 10 tags)</td></tr>
+      <tr><td><code>/tags info name:&lt;keyword&gt;</code></td><td>Detailed info: keywords, style, usages, creator, required role</td></tr>
+      <tr><td><code>/tags export</code></td><td>Export all server tags as a JSON file</td></tr>
+      <tr><td><code>/tags help</code></td><td>Quick reference of all commands</td></tr>
+    </table>
+
+    <!-- ═══════ MODERATION ═══════ -->
+
+    <h2 id="warnings">Warning System <span class="badge badge-mod">Moderator</span></h2>
+    <p>A full warning system with automatic escalation. Moderators can warn users, and the bot automatically takes action when thresholds are reached.</p>
+
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/warn @user reason:&lt;text&gt;</code></td><td>Issue a warning. Shows current count and any escalation taken.</td></tr>
+      <tr><td><code>/warnings @user</code></td><td>View all warnings for a user (active and expired)</td></tr>
+      <tr><td><code>/clearwarning id:&lt;number&gt;</code></td><td>Remove a specific warning by its ID</td></tr>
+    </table>
+
+    <h3>Escalation Thresholds</h3>
+    <p>Default thresholds (configurable via <code>WARN_THRESHOLDS</code> in <code>.env</code>):</p>
+    <table class="cmd-table">
+      <tr><th>Warnings</th><th>Action</th></tr>
+      <tr><td>3</td><td>Mute (1 hour timeout)</td></tr>
+      <tr><td>5</td><td>Kick from server</td></tr>
+      <tr><td>7</td><td>Ban from server</td></tr>
+    </table>
+
+    <h3>Warning Decay</h3>
+    <p>Warnings automatically expire after a configurable number of days (default: 30). Expired warnings are marked as inactive and no longer count toward escalation thresholds. A background job checks for expired warnings daily.</p>
+
+    <h2 id="autoresponse">Auto-Responses <span class="badge badge-admin">Admin</span></h2>
+    <p>Automatically reply with a tag when a message matches a keyword or regex pattern. Useful for FAQ automation.</p>
+
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/autoresponse add pattern:&lt;text&gt; tag:&lt;keyword&gt;</code></td><td>Add a trigger. Optionally set <code>regex:true</code> and <code>channel:#channel</code></td></tr>
+      <tr><td><code>/autoresponse remove id:&lt;number&gt;</code></td><td>Remove a trigger by ID</td></tr>
+      <tr><td><code>/autoresponse list</code></td><td>List all triggers with their IDs, patterns, and status</td></tr>
+      <tr><td><code>/autoresponse toggle id:&lt;number&gt;</code></td><td>Enable or disable a trigger without deleting it</td></tr>
+    </table>
+
+    <div class="tip"><strong>Example:</strong> <code>/autoresponse add pattern:how do i join tag:join-instructions</code> &mdash; Whenever someone says "how do i join", the bot sends the <code>join-instructions</code> tag.</div>
+
+    <h3>Regex Mode</h3>
+    <p>Set <code>regex:true</code> when adding a trigger to use regular expressions. Example: <code>pattern:(?i)how\s+(do|can)\s+i\s+join</code> matches "How do I join", "how can i join", etc.</p>
+
+    <h3>Per-Trigger Cooldown</h3>
+    <p>Each trigger has a 30-second cooldown by default to prevent spam. The cooldown is per-guild per-trigger.</p>
+
+    <h2 id="antispam">Anti-Spam <span class="badge badge-admin">Admin</span></h2>
+    <p>Protects your server from spam, duplicate messages, suspicious links, and Discord invite links.</p>
+
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/antispam toggle</code></td><td>Enable or disable anti-spam for the server</td></tr>
+      <tr><td><code>/antispam ratelimit messages:&lt;n&gt; window:&lt;ms&gt;</code></td><td>Set rate limit (default: 5 messages per 5000ms)</td></tr>
+      <tr><td><code>/antispam linkfilter enabled:&lt;bool&gt;</code></td><td>Toggle link filtering (blocks unknown URLs)</td></tr>
+      <tr><td><code>/antispam invitefilter enabled:&lt;bool&gt;</code></td><td>Toggle invite filtering (blocks Discord invites)</td></tr>
+      <tr><td><code>/antispam whitelist action:add domain:&lt;url&gt;</code></td><td>Whitelist a domain from link filtering</td></tr>
+      <tr><td><code>/antispam whitelist action:remove domain:&lt;url&gt;</code></td><td>Remove a domain from the whitelist</td></tr>
+      <tr><td><code>/antispam status</code></td><td>Show current anti-spam configuration</td></tr>
+    </table>
+
+    <h3>What Gets Detected</h3>
+    <ul>
+      <li><strong>Rate Limiting</strong> &mdash; Too many messages in a short time window. Configurable threshold and window.</li>
+      <li><strong>Duplicate Detection</strong> &mdash; Repeated identical messages (based on content hash).</li>
+      <li><strong>Link Filter</strong> &mdash; Messages containing URLs not on the whitelist.</li>
+      <li><strong>Invite Filter</strong> &mdash; Messages containing Discord server invite links.</li>
+    </ul>
+    <p>Spam messages are automatically deleted. Optionally, the user receives an automatic warning via the warning system.</p>
+    <p>Users with the "Manage Messages" permission are exempt from anti-spam checks.</p>
+
+    <!-- ═══════ COMMUNITY ═══════ -->
+
+    <h2 id="welcome">Welcome Messages <span class="badge badge-admin">Admin</span></h2>
+    <p>Greet new members and say goodbye to leaving ones. Supports placeholders, auto-role, and optional DMs.</p>
+
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/welcome channel #channel</code></td><td>Set which channel receives welcome/leave messages</td></tr>
+      <tr><td><code>/welcome message text:&lt;text&gt;</code></td><td>Set the join message. Supports placeholders.</td></tr>
+      <tr><td><code>/welcome leave text:&lt;text&gt;</code></td><td>Set the leave message. Supports placeholders.</td></tr>
+      <tr><td><code>/welcome autorole role:@Role</code></td><td>Automatically assign a role to new members</td></tr>
+      <tr><td><code>/welcome dm enabled:true text:&lt;text&gt;</code></td><td>Send a DM to new members on join</td></tr>
+      <tr><td><code>/welcome test</code></td><td>Preview the welcome message using yourself as the "new member"</td></tr>
+      <tr><td><code>/welcome status</code></td><td>Show current welcome configuration</td></tr>
+    </table>
+
+    <div class="tip"><strong>Example message:</strong> <code>Welcome to {server}, {user.mention}! You are member #{server.members}.</code></div>
+
+    <p>All placeholders from the <a href="#tags-templates" style="color:#B5C8B4">Tags Templates</a> section work in welcome messages too.</p>
+
+    <h2 id="reactionroles">Reaction Roles <span class="badge badge-admin">Admin</span></h2>
+    <p>Let members assign themselves roles by clicking buttons or selecting from dropdowns.</p>
+
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/rolepanel create title:&lt;text&gt; style:buttons</code></td><td>Create a new role panel (buttons or dropdown)</td></tr>
+      <tr><td><code>/rolepanel addrole panel:&lt;id&gt; role:@Role label:&lt;text&gt;</code></td><td>Add a role to the panel. Optional: <code>emoji:</code></td></tr>
+      <tr><td><code>/rolepanel send panel:&lt;id&gt;</code></td><td>Post the panel in the current channel</td></tr>
+      <tr><td><code>/rolepanel delete panel:&lt;id&gt;</code></td><td>Delete a panel</td></tr>
+      <tr><td><code>/rolepanel list</code></td><td>Show all panels for this server</td></tr>
+    </table>
+
+    <h3>Button vs Dropdown</h3>
+    <ul>
+      <li><strong>Buttons</strong> (default) &mdash; Each role gets its own button. Click to toggle. Supports up to 25 roles (5 rows of 5).</li>
+      <li><strong>Dropdown</strong> &mdash; All roles in a single select menu. Members can select multiple roles at once.</li>
+    </ul>
+
+    <h3>How It Works</h3>
+    <p>When a member clicks a button or selects a role from the dropdown, the bot toggles the role: adds it if the member doesn't have it, removes it if they do. No additional permissions needed from the member.</p>
+
+    <h2 id="tickets">Ticket System <span class="badge badge-public">Public</span></h2>
+    <p>A support ticket system where members can create private channels for help requests.</p>
+
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/ticket setup supportrole:@Role</code></td><td>Set up the ticket system. Posts a panel with a "Create Ticket" button. Optional: <code>categories:support,bug,feedback</code></td></tr>
+      <tr><td><code>/ticket create</code></td><td>Create a new ticket. Optional: <code>category:bug</code></td></tr>
+      <tr><td><code>/ticket claim</code></td><td>Claim a ticket (mark yourself as the handler)</td></tr>
+      <tr><td><code>/ticket close</code></td><td>Close the current ticket (with confirmation)</td></tr>
+      <tr><td><code>/ticket transcript</code></td><td>Generate a markdown transcript of the ticket</td></tr>
+    </table>
+
+    <h3>How Tickets Work</h3>
+    <ol>
+      <li>An admin runs <code>/ticket setup</code> to configure the support role and post a ticket panel.</li>
+      <li>Members click "Create Ticket" or use <code>/ticket create</code> to open a ticket.</li>
+      <li>A private channel is created visible only to the member and the support team.</li>
+      <li>Support staff can <code>/ticket claim</code> the ticket to indicate they are handling it.</li>
+      <li>When resolved, anyone can <code>/ticket close</code>. A transcript can be generated before closing.</li>
+    </ol>
+
+    <div class="tip"><strong>Limits:</strong> Maximum 50 open tickets per server to prevent channel spam.</div>
+
+    <h2 id="leveling">Leveling &amp; XP <span class="badge badge-public">Public</span></h2>
+    <p>Members earn XP by chatting. As they level up, they can unlock special roles.</p>
+
+    <h3>User Commands</h3>
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/rank</code></td><td>View your level, XP, and progress to next level</td></tr>
+      <tr><td><code>/rank @user</code></td><td>View someone else's rank</td></tr>
+      <tr><td><code>/top</code></td><td>Server leaderboard (top 10)</td></tr>
+      <tr><td><code>/top page:2</code></td><td>View other pages of the leaderboard</td></tr>
+    </table>
+
+    <h3>Admin Commands <span class="badge badge-admin">Admin</span></h3>
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/xp toggle</code></td><td>Enable or disable the leveling system</td></tr>
+      <tr><td><code>/xp addrole level:5 role:@Active</code></td><td>Assign a role when a member reaches level 5</td></tr>
+      <tr><td><code>/xp removerole level:5</code></td><td>Remove a level role reward</td></tr>
+      <tr><td><code>/xp multiplier channel:#chat multiplier:1.5</code></td><td>Set 1.5x XP in a specific channel</td></tr>
+      <tr><td><code>/xp status</code></td><td>Show leveling configuration</td></tr>
+    </table>
+
+    <h3>How XP Works</h3>
+    <ul>
+      <li>Members earn 15-25 XP per message (randomized)</li>
+      <li>XP cooldown: 60 seconds between gains (prevents spam grinding)</li>
+      <li>Level formula: <code>level = floor(0.1 * sqrt(xp))</code></li>
+      <li>Level roles are automatically assigned when a member levels up</li>
+      <li>Channel multipliers let you boost or reduce XP in specific channels</li>
+    </ul>
+
+    <h2 id="polls">Polls <span class="badge badge-public">Public</span></h2>
+    <p>Create polls with buttons for voting. Supports time limits, anonymous voting, and multi-choice.</p>
+
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/poll question:&lt;text&gt; options:&lt;opt1,opt2,opt3&gt;</code></td><td>Create a basic poll</td></tr>
+      <tr><td><code>/poll ... duration:1h</code></td><td>Auto-close after 1 hour. Supports: <code>30m</code>, <code>1h</code>, <code>1d</code>, etc.</td></tr>
+      <tr><td><code>/poll ... anonymous:true</code></td><td>Hide voter names in results</td></tr>
+      <tr><td><code>/poll ... multichoice:true</code></td><td>Allow members to vote for multiple options</td></tr>
+    </table>
+
+    <h3>How Polls Work</h3>
+    <ul>
+      <li>Each option gets a vote button. Members click to vote (click again to unvote).</li>
+      <li>Vote counts are updated live on the message.</li>
+      <li>Polls can be closed manually by the creator or any admin, or automatically after the duration expires.</li>
+      <li>Final results are posted when the poll closes.</li>
+    </ul>
+
+    <!-- ═══════ REFERENCE ═══════ -->
+
+    <h2 id="config">Configuration</h2>
+    <p>All configuration is done via the <code>.env</code> file. Here is a complete reference:</p>
+
+    <table class="cmd-table">
+      <tr><th>Variable</th><th>Description</th><th>Default</th></tr>
+      <tr><td><code>DISCORD_TOKEN</code></td><td>Your Discord bot token</td><td><em>required</em></td></tr>
+      <tr><td><code>DB_HOST</code></td><td>MariaDB host</td><td><em>required</em></td></tr>
+      <tr><td><code>DB_PORT</code></td><td>MariaDB port</td><td><code>3306</code></td></tr>
+      <tr><td><code>DB_NAME</code></td><td>Database name</td><td><em>required</em></td></tr>
+      <tr><td><code>DB_USER</code></td><td>Database user</td><td><em>required</em></td></tr>
+      <tr><td><code>DB_PASSWORD</code></td><td>Database password</td><td><em>required</em></td></tr>
+      <tr><td><code>ALLOWED_GUILDS</code></td><td>Comma-separated guild IDs (empty = all)</td><td><em>empty</em></td></tr>
+      <tr><td><code>TAG_COOLDOWN_MS</code></td><td>Per-channel tag cooldown in ms</td><td><code>2500</code></td></tr>
+      <tr><td><code>ACCENT_COLOR</code></td><td>Embed accent color (hex without #)</td><td><code>B5C8B4</code></td></tr>
+      <tr><td><code>WARN_DECAY_DAYS</code></td><td>Days until warnings auto-expire</td><td><code>30</code></td></tr>
+      <tr><td><code>WARN_THRESHOLDS</code></td><td>Escalation rules (count:action pairs)</td><td><code>3:mute,5:kick,7:ban</code></td></tr>
+      <tr><td><code>ANTISPAM_RATE_LIMIT</code></td><td>Max messages in rate window</td><td><code>5</code></td></tr>
+      <tr><td><code>ANTISPAM_RATE_WINDOW</code></td><td>Rate limit window in ms</td><td><code>5000</code></td></tr>
+      <tr><td><code>LEVELING_XP_MIN</code></td><td>Minimum XP per message</td><td><code>15</code></td></tr>
+      <tr><td><code>LEVELING_XP_MAX</code></td><td>Maximum XP per message</td><td><code>25</code></td></tr>
+      <tr><td><code>LEVELING_COOLDOWN</code></td><td>XP gain cooldown in ms</td><td><code>60000</code></td></tr>
+    </table>
+
+    <h2 id="all-commands">All Commands</h2>
+
+    <h3>Tags</h3>
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Permission</th><th>Description</th></tr>
+      <tr><td><code>!t keyword</code></td><td><span class="badge badge-public">Public</span></td><td>Trigger a tag</td></tr>
+      <tr><td><code>/tags manage</code></td><td><span class="badge badge-mod">Mod</span></td><td>Create/edit/delete tags</td></tr>
+      <tr><td><code>/tags show</code></td><td><span class="badge badge-mod">Mod</span></td><td>List all tags</td></tr>
+      <tr><td><code>/tags search</code></td><td><span class="badge badge-mod">Mod</span></td><td>Search tags</td></tr>
+      <tr><td><code>/tags stats</code></td><td><span class="badge badge-mod">Mod</span></td><td>Usage statistics</td></tr>
+      <tr><td><code>/tags info</code></td><td><span class="badge badge-mod">Mod</span></td><td>Tag details</td></tr>
+      <tr><td><code>/tags export</code></td><td><span class="badge badge-mod">Mod</span></td><td>Export as JSON</td></tr>
+      <tr><td><code>/tags analytics</code></td><td><span class="badge badge-mod">Mod</span></td><td>Usage analytics</td></tr>
+      <tr><td><code>/tags permissions</code></td><td><span class="badge badge-mod">Mod</span></td><td>Role restrictions</td></tr>
+      <tr><td><code>/tags help</code></td><td><span class="badge badge-mod">Mod</span></td><td>Command reference</td></tr>
+    </table>
+
+    <h3>Moderation</h3>
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Permission</th><th>Description</th></tr>
+      <tr><td><code>/warn</code></td><td><span class="badge badge-mod">Mod</span></td><td>Issue a warning</td></tr>
+      <tr><td><code>/warnings</code></td><td><span class="badge badge-mod">Mod</span></td><td>View warnings</td></tr>
+      <tr><td><code>/clearwarning</code></td><td><span class="badge badge-mod">Mod</span></td><td>Remove warning</td></tr>
+      <tr><td><code>/autoresponse</code></td><td><span class="badge badge-admin">Admin</span></td><td>Auto-response triggers</td></tr>
+      <tr><td><code>/antispam</code></td><td><span class="badge badge-admin">Admin</span></td><td>Anti-spam config</td></tr>
+    </table>
+
+    <h3>Community</h3>
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Permission</th><th>Description</th></tr>
+      <tr><td><code>/welcome</code></td><td><span class="badge badge-admin">Admin</span></td><td>Welcome system config</td></tr>
+      <tr><td><code>/rolepanel</code></td><td><span class="badge badge-admin">Admin</span></td><td>Reaction role panels</td></tr>
+      <tr><td><code>/ticket setup</code></td><td><span class="badge badge-admin">Admin</span></td><td>Ticket system setup</td></tr>
+      <tr><td><code>/ticket create</code></td><td><span class="badge badge-public">Public</span></td><td>Open a ticket</td></tr>
+      <tr><td><code>/ticket close/claim/transcript</code></td><td><span class="badge badge-public">Public</span></td><td>Ticket actions</td></tr>
+      <tr><td><code>/rank</code></td><td><span class="badge badge-public">Public</span></td><td>View level &amp; XP</td></tr>
+      <tr><td><code>/top</code></td><td><span class="badge badge-public">Public</span></td><td>Leaderboard</td></tr>
+      <tr><td><code>/xp</code></td><td><span class="badge badge-admin">Admin</span></td><td>Leveling config</td></tr>
+      <tr><td><code>/poll</code></td><td><span class="badge badge-public">Public</span></td><td>Create polls</td></tr>
+    </table>
+
+    <div style="margin-top:4rem;padding:2rem 0;border-top:1px solid rgba(255,255,255,0.06);text-align:center;color:#484f58;font-size:0.85rem;">
+      BetterGhast v3.0 &mdash; <a href="/" style="color:#8b949e">Home</a> &middot; <a href="https://github.com/Krogie/BetterGhast" style="color:#8b949e">GitHub</a> &middot; <a href="/terms" style="color:#8b949e">Terms</a> &middot; <a href="/privacy" style="color:#8b949e">Privacy</a>
+    </div>
+
+  </main>
+</div>
+</body>
+</html>
