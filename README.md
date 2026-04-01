@@ -3,7 +3,7 @@
 A powerful Discord tag management bot built with Kotlin, JDA 6, and MariaDB. Fork of Ghastling -- rebuilt, optimized, and extended.
 
 [![Add to Discord](https://img.shields.io/badge/Add%20to%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1488805332741525595&permissions=274877975552&scope=bot+applications.commands)
-[![Website](https://img.shields.io/badge/Website-0d1117?style=for-the-badge&logo=github&logoColor=white)](https://krogie.github.io/BetterGhast)
+[![Website](https://img.shields.io/badge/Website-0d1117?style=for-the-badge&logo=github&logoColor=white)](https://betterghast.krogie.com)
 
 ---
 

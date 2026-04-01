@@ -271,7 +271,7 @@ object TagListener {
             - **Raw Message** — Plain text, no embed
 
             **Links**
-            [Website](https://krogie.github.io/BetterGhast) — [GitHub](https://github.com/Krogie/BetterGhast)
+            [Website](https://betterghast.krogie.com) — [GitHub](https://github.com/Krogie/BetterGhast)
         """.trimIndent()
 
         event.replyContainer(help)
