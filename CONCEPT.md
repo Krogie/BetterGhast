@@ -1,172 +1,172 @@
 # BetterGhast v3.0 - Update Concept
 
 ## Vision
-BetterGhast wird von einem einfachen Tag-Bot zu einem vollwertigen Server-Management-Bot erweitert. Der Fokus liegt auf Moderation, Community-Engagement und Automatisierung.
+BetterGhast will evolve from a simple tag bot into a full-featured server management bot. The focus is on moderation, community engagement, and automation.
 
 ---
 
-## Phase 1: Tag-System Erweiterungen
+## Phase 1: Tag System Extensions
 
 ### Tag Permissions System
-- **Tag-Rollen:** Tags koennen bestimmten Rollen zugewiesen werden (nur diese Rollen koennen sie nutzen)
-- **Tag-Owner:** Jeder Tag hat einen Ersteller, der ihn bearbeiten kann (nicht nur Moderatoren)
-- **Read-Only Tags:** Tags die nur von Admins erstellt aber von allen genutzt werden koennen
+- **Tag Roles:** Tags can be assigned to specific roles (only those roles can use them)
+- **Tag Ownership:** Each tag has a creator who can edit it (not just moderators)
+- **Read-Only Tags:** Tags that can only be created by admins but used by everyone
 
 ### Tag Templates
-- **Platzhalter:** `{user}`, `{channel}`, `{server}`, `{date}` werden automatisch ersetzt
-- **Mention-Support:** `!t welcome @User` ersetzt `{mention}` im Tag-Content
-- **Conditional Content:** Verschiedener Content je nach Rolle des Nutzers
+- **Placeholders:** `{user}`, `{channel}`, `{server}`, `{date}` are automatically replaced
+- **Mention Support:** `!t welcome @User` replaces `{mention}` in tag content
+- **Conditional Content:** Different content depending on the user's role
 
 ### Tag Analytics Dashboard
-- **Nutzungs-Trends:** Wann werden Tags am meisten genutzt (nach Stunde/Tag)
-- **Top-Nutzer:** Wer nutzt welche Tags am meisten
-- **Unused Tag Cleanup:** Automatische Benachrichtigung ueber nie genutzte Tags
+- **Usage Trends:** When are tags used the most (by hour/day)
+- **Top Users:** Who uses which tags the most
+- **Unused Tag Cleanup:** Automatic notification about never-used tags
 
-### Tag Import/Export (v2.0 - bereits implementiert)
-- JSON Export aller Tags
-- Import von Tags aus anderen Servern
-- Backup/Restore Funktion
+### Tag Import/Export (v2.0 - already implemented)
+- JSON export of all tags
+- Import tags from other servers
+- Backup/Restore functionality
 
 ---
 
 ## Phase 2: Auto-Moderation
 
 ### Auto-Response System
-- **Trigger-Words:** Automatisch Tags senden wenn bestimmte Woerter im Chat auftauchen
-- **Regex-Matching:** Flexible Pattern-Erkennung fuer Trigger
-- **Cooldown pro Trigger:** Verhindert Spam
-- **Channel-Filter:** Trigger nur in bestimmten Channels aktiv
+- **Trigger Words:** Automatically send tags when certain words appear in chat
+- **Regex Matching:** Flexible pattern recognition for triggers
+- **Cooldown per Trigger:** Prevents spam
+- **Channel Filter:** Triggers only active in specific channels
 
 ### Warning System
-- `/warn @user reason` - Verwarnung aussprechen
-- Automatische Aktionen bei X Verwarnungen (Mute, Kick, Ban)
-- Warning-Log in eigenem Channel
-- Warning-Decay: Verwarnungen laufen nach X Tagen ab
+- `/warn @user reason` - Issue a warning
+- Automatic actions after X warnings (mute, kick, ban)
+- Warning log in a dedicated channel
+- Warning decay: Warnings expire after X days
 
 ### Anti-Spam
-- **Duplicate Detection:** Erkennt kopierte Nachrichten
-- **Rate-Limiting:** Zu schnelles Schreiben erkennen
-- **Link-Filter:** Unbekannte Links automatisch pruefen
-- **Invite-Filter:** Discord-Einladungen blockieren (mit Whitelist)
+- **Duplicate Detection:** Detects copied messages
+- **Rate Limiting:** Detects rapid message sending
+- **Link Filter:** Automatically check unknown links
+- **Invite Filter:** Block Discord invites (with whitelist)
 
 ---
 
 ## Phase 3: Community Features
 
 ### Reaction Roles
-- `/reactionrole setup` - Nachricht mit Reactions erstellen
-- Rollen automatisch zuweisen/entfernen bei Reaction
-- Support fuer Button-basierte Rollen (moderner als Reactions)
-- Dropdown-Menues fuer Rollen-Auswahl
+- `/reactionrole setup` - Create a message with reactions
+- Automatically assign/remove roles on reaction
+- Support for button-based roles (more modern than reactions)
+- Dropdown menus for role selection
 
 ### Welcome System
-- **Join-Message:** Anpassbare Willkommensnachricht mit Platzhaltern
-- **Leave-Message:** Abschiedsnachricht
-- **Auto-Role:** Automatisch Rollen bei Join vergeben
-- **Welcome-DM:** Optionale DM an neue Mitglieder
+- **Join Message:** Customizable welcome message with placeholders
+- **Leave Message:** Farewell message
+- **Auto-Role:** Automatically assign roles on join
+- **Welcome DM:** Optional DM to new members
 
 ### Ticket System
-- `/ticket create` - Support-Ticket eroeffnen
-- Eigener Channel pro Ticket
-- Ticket-Transcript bei Schliessung
-- Ticket-Kategorien (Support, Bug, Feedback)
-- Claim-System fuer Supporter
+- `/ticket create` - Open a support ticket
+- Dedicated channel per ticket
+- Ticket transcript on close
+- Ticket categories (Support, Bug, Feedback)
+- Claim system for supporters
 
 ### Leveling System
-- XP fuer Nachrichten und Voice-Zeit
-- Level-Rollen automatisch vergeben
-- Leaderboard mit `/top`
-- XP-Multiplikatoren fuer bestimmte Channels
-- Level-Up Benachrichtigungen
+- XP for messages and voice time
+- Automatically assign level roles
+- Leaderboard with `/top`
+- XP multipliers for specific channels
+- Level-up notifications
 
 ---
 
 ## Phase 4: Utility & Tools
 
 ### Server Stats
-- **Member Counter:** Live-Counter in Channel-Namen
-- **Bot Counter:** Anzahl Bots
-- **Online Counter:** Aktuell online
-- **Boost Counter:** Server Boosts anzeigen
+- **Member Counter:** Live counter in channel names
+- **Bot Counter:** Number of bots
+- **Online Counter:** Currently online
+- **Boost Counter:** Display server boosts
 
 ### Logging System
-- **Message Logs:** Geloeschte/editierte Nachrichten loggen
-- **Join/Leave Logs:** Mitglieder-Bewegungen
-- **Role Logs:** Rollenaenderungen
-- **Voice Logs:** Voice-Channel Aktivitaet
-- **Mod Logs:** Alle Moderations-Aktionen
+- **Message Logs:** Log deleted/edited messages
+- **Join/Leave Logs:** Member movements
+- **Role Logs:** Role changes
+- **Voice Logs:** Voice channel activity
+- **Mod Logs:** All moderation actions
 
 ### Reminder System
-- `/remind 2h Meeting starten` - Persoenliche Erinnerungen
-- Wiederholende Reminder (taeglich, woechentlich)
-- Channel-Reminder fuer Announcements
+- `/remind 2h Start meeting` - Personal reminders
+- Recurring reminders (daily, weekly)
+- Channel reminders for announcements
 
 ### Poll System
-- `/poll "Frage" "Option 1" "Option 2"` - Umfragen erstellen
-- Zeitlimit fuer Polls
-- Anonyme Abstimmungen
-- Multi-Choice Support
+- `/poll "Question" "Option 1" "Option 2"` - Create polls
+- Time limits for polls
+- Anonymous voting
+- Multi-choice support
 
 ---
 
 ## Phase 5: Dashboard & API
 
 ### Web Dashboard
-- **Tag Management:** Tags ueber Browser verwalten
-- **Server Config:** Bot-Einstellungen ueber Web-Interface
-- **Analytics:** Nutzungsstatistiken visualisiert
-- **Audit Log:** Alle Aktionen nachvollziehbar
+- **Tag Management:** Manage tags via browser
+- **Server Config:** Bot settings via web interface
+- **Analytics:** Visualized usage statistics
+- **Audit Log:** All actions traceable
 
 ### REST API
-- Endpoints fuer Tag CRUD
-- Webhook-Integration fuer externe Tools
-- Discord OAuth2 Login
-- Rate-Limiting & API Keys
+- Endpoints for tag CRUD
+- Webhook integration for external tools
+- Discord OAuth2 login
+- Rate limiting & API keys
 
 ---
 
-## Technische Verbesserungen
+## Technical Improvements
 
-### Datenbank
-- [ ] Flyway Migration Framework einbauen
-- [ ] Tag-Versioning (History-Tabelle)
-- [ ] Audit-Log Tabelle
-- [ ] Redis Cache fuer haeufig genutzte Tags
+### Database
+- [ ] Flyway migration framework
+- [ ] Tag versioning (history table)
+- [ ] Audit log table
+- [ ] Redis cache for frequently used tags
 
 ### Performance
-- [ ] Lazy-Loading fuer Guild-Caches
-- [ ] Connection Pool Optimierung
-- [ ] Batch-Updates fuer Usage-Counter
-- [ ] Async Event Processing Pipeline
+- [ ] Lazy loading for guild caches
+- [ ] Connection pool optimization
+- [ ] Batch updates for usage counters
+- [ ] Async event processing pipeline
 
-### Code-Qualitaet
-- [ ] Unit Tests mit JUnit 5
-- [ ] Integration Tests mit Testcontainers (MariaDB)
-- [ ] CI/CD Pipeline (GitHub Actions)
-- [ ] Docker Deployment
-- [ ] Gradle Shadow JAR fuer einfaches Deployment
+### Code Quality
+- [ ] Unit tests with JUnit 5
+- [ ] Integration tests with Testcontainers (MariaDB)
+- [ ] CI/CD pipeline (GitHub Actions)
+- [ ] Docker deployment
+- [ ] Gradle Shadow JAR for easy deployment
 
 ### Monitoring
-- [ ] Health-Check Endpoint
-- [ ] Prometheus Metrics
-- [ ] Structured Logging (JSON)
-- [ ] Error Tracking (Sentry Integration)
+- [ ] Health check endpoint
+- [ ] Prometheus metrics
+- [ ] Structured logging (JSON)
+- [ ] Error tracking (Sentry integration)
 
 ---
 
-## Prioritaeten
+## Priorities
 
-| Prioritaet | Feature | Aufwand |
-|------------|---------|--------|
-| Hoch | Auto-Response System | Mittel |
-| Hoch | Warning System | Mittel |
-| Hoch | Logging System | Mittel |
-| Hoch | CI/CD + Docker | Klein |
-| Mittel | Reaction Roles | Klein |
-| Mittel | Welcome System | Klein |
-| Mittel | Tag Permissions | Mittel |
-| Mittel | Tag Templates | Mittel |
-| Niedrig | Ticket System | Gross |
-| Niedrig | Leveling System | Gross |
-| Niedrig | Web Dashboard | Gross |
-| Niedrig | REST API | Gross |
+| Priority | Feature | Effort |
+|----------|---------|--------|
+| High | Auto-Response System | Medium |
+| High | Warning System | Medium |
+| High | Logging System | Medium |
+| High | CI/CD + Docker | Small |
+| Medium | Reaction Roles | Small |
+| Medium | Welcome System | Small |
+| Medium | Tag Permissions | Medium |
+| Medium | Tag Templates | Medium |
+| Low | Ticket System | Large |
+| Low | Leveling System | Large |
+| Low | Web Dashboard | Large |
+| Low | REST API | Large |
