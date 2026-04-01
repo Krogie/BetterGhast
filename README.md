@@ -1,86 +1,78 @@
 # BetterGhast
 
-A powerful Discord tag management bot built with Kotlin, JDA 6, and MariaDB. Fork of Ghastling -- rebuilt, optimized, and extended.
+A powerful Discord bot for tag management, moderation, and community tools. Built with Kotlin, JDA 6, and MariaDB. Fork of Ghastling -- rebuilt, optimized, and massively extended.
 
 [![Add to Discord](https://img.shields.io/badge/Add%20to%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1488805332741525595&permissions=274877975552&scope=bot+applications.commands)
 [![Website](https://img.shields.io/badge/Website-0d1117?style=for-the-badge&logo=github&logoColor=white)](https://betterghast.krogie.com)
 
 ---
 
-## Why BetterGhast?
-
-BetterGhast is a cleaner, more stable, and feature-rich version of the original Ghastling bot. Here's what sets it apart:
-
-- **Stability** -- Fixed critical bugs like database connection pool leaks, unsafe null assertions, and missing guild authorization checks
-- **More Commands** -- Added `/tags info`, `/tags export`, `/tags search`, and `/tags stats` on top of the original manage/show commands
-- **Safer Code** -- All `!!` operators replaced with safe `?.` calls, input validation on modals, config fallback values
-- **Graceful Shutdown** -- Both JDA and the database pool shut down cleanly via shutdown hook, no more leaked connections
-- **Better UX** -- Delete confirmation dialogs, paginated tag lists, visual usage bar charts, tag search by content
-- **Export & Backup** -- Export your entire tag collection as JSON with a single command
-- **Active Development** -- See the roadmap below for what's coming next
-
----
-
 ## Features
 
+### Tag System
 | Command | Description |
 |---------|-------------|
-| `!t keyword` | Trigger a tag via prefix command |
+| `!t keyword` | Trigger a tag via prefix |
 | `/tags manage` | Create, edit, or delete tags via modal |
 | `/tags show` | List all tags with pagination |
 | `/tags search` | Search tags by keyword or content |
-| `/tags stats` | View usage statistics with bar chart |
-| `/tags info` | Detailed info about a specific tag |
-| `/tags export` | Export all tags as a JSON file |
+| `/tags stats` | Usage statistics with bar chart |
+| `/tags info` | Detailed info about a tag |
+| `/tags export` | Export all tags as JSON |
+| `/tags analytics` | Usage trends, top users, unused tags |
+| `/tags permissions` | Set role restrictions on tags |
+| `/tags help` | Show all commands |
 
-**Tag Styles:**
-- **Accent Embed** -- Styled container with your custom accent color
-- **No Accent** -- Clean embed without color
-- **Raw Message** -- Plain text, no embed
+- **3 tag styles:** Accent Embed, No Accent, Raw Message
+- **Template placeholders:** `{user}`, `{channel}`, `{server}`, `{date}`, `{mention}`
+- **Role-based permissions:** Restrict tags to specific roles
+- **Creator tracking:** See who created each tag and when
+- Per-channel cooldowns, keyword aliases, autocomplete, conflict detection, media galleries
 
-**Other Features:**
-- Per-channel cooldowns to prevent spam
-- Keyword aliases (multiple triggers per tag)
-- Autocomplete for tag names
-- Conflict detection when creating tags
-- Media gallery auto-detection for URLs
-- Markdown support in tag content
-- Guild allowlist for multi-server setups
+### Moderation
+| Command | Description |
+|---------|-------------|
+| `/warn @user reason` | Issue a warning |
+| `/warnings @user` | View user's warnings |
+| `/clearwarning id` | Remove a warning |
+| `/autoresponse add\|remove\|list\|toggle` | Auto-response triggers |
+| `/antispam toggle\|ratelimit\|linkfilter\|invitefilter\|whitelist\|status` | Anti-spam config |
+
+- **Warning escalation:** Auto mute/kick/ban at configurable thresholds (default: 3=mute, 5=kick, 7=ban)
+- **Warning decay:** Warnings expire after configurable days (default: 30)
+- **Auto-responses:** Keyword or regex triggers that auto-send tags
+- **Anti-spam:** Rate limiting, duplicate detection, link/invite filters with whitelist
+
+### Community
+| Command | Description |
+|---------|-------------|
+| `/welcome channel\|message\|leave\|autorole\|dm\|test\|status` | Welcome system |
+| `/rolepanel create\|addrole\|send\|delete\|list` | Reaction roles |
+| `/ticket create\|close\|claim\|transcript\|setup` | Ticket system |
+| `/rank [@user]` | View level and XP |
+| `/top [page]` | Server leaderboard |
+| `/xp toggle\|addrole\|removerole\|multiplier\|status` | Leveling config |
+| `/poll question options [duration] [anonymous] [multichoice]` | Create polls |
+
+- **Welcome/leave messages** with placeholders and auto-role assignment
+- **Reaction roles** with button or dropdown panels
+- **Ticket system** with categories, claiming, and transcript generation
+- **Leveling** with XP per message, level roles, channel multipliers, leaderboards
+- **Polls** with time limits, anonymous voting, and multi-choice
 
 ---
 
-## Planned Features & Roadmap
+## Roadmap
 
-### v2.1 -- Tag System Improvements
-- Tag permissions (role-based access, tag ownership)
-- Tag templates with placeholders (`{user}`, `{channel}`, `{server}`)
-- Tag analytics (usage trends, top users, cleanup suggestions)
-
-### v2.5 -- Auto-Moderation
-- Auto-response triggers (keyword-based automatic tag replies)
-- Warning system (`/warn @user reason`) with escalation (mute/kick/ban)
-- Anti-spam (duplicate detection, rate limiting, link/invite filters)
-
-### v3.0 -- Community Features
-- Reaction roles (button & dropdown based)
-- Welcome/leave messages with auto-role
-- Ticket system with transcripts
-- Leveling system with XP and leaderboards
-- Poll system with time limits and multi-choice
-
-### v4.0 -- Dashboard & API
-- Web dashboard for tag management and server config
-- REST API with Discord OAuth2
-- Prometheus metrics and monitoring
-- Docker deployment
-
-See [CONCEPT.md](CONCEPT.md) for the full detailed roadmap.
+- [x] **v2.0** -- Tag system with search, stats, pagination, export
+- [x] **v2.1** -- Tag permissions, templates, analytics
+- [x] **v2.5** -- Auto-moderation (warnings, auto-response, anti-spam)
+- [x] **v3.0** -- Community features (welcome, roles, tickets, leveling, polls)
+- [ ] **v4.0** -- Web dashboard, REST API, monitoring
 
 ---
 
 ## Quick Deploy (Docker)
-
-The fastest way to get BetterGhast running on your server:
 
 ```bash
 git clone https://github.com/Krogie/BetterGhast.git
@@ -88,32 +80,25 @@ cd BetterGhast
 bash deploy.sh
 ```
 
-The deploy script will:
-1. Install Docker if needed
-2. Ask for your Discord token and create the `.env` config
-3. Start MariaDB + BetterGhast in Docker containers
+The deploy script installs Docker if needed, asks for your Discord token, and starts everything.
 
-That's it. Bot is running.
-
-**Useful commands after deploy:**
+**After deploy:**
 ```bash
 docker compose logs -f bot     # View live logs
 docker compose restart bot     # Restart the bot
 docker compose down            # Stop everything
-git pull && docker compose up -d --build  # Update to latest version
+git pull && docker compose up -d --build  # Update
 ```
 
 ---
 
 ## Manual Installation
 
-If you prefer to run without Docker:
-
 ### Requirements
 
-- **Java 21** or higher
-- **MariaDB 10.6+** (or compatible MySQL)
-- A **Discord Bot Token** with Message Content Intent enabled
+- **Java 21+**
+- **MariaDB 10.6+**
+- **Discord Bot Token** with Message Content Intent + Server Members Intent enabled
 
 ### 1. Clone and configure
 
@@ -123,21 +108,23 @@ cd BetterGhast
 cp .env.example .env
 ```
 
-Edit `.env` with your values:
+### 2. Edit `.env`
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DISCORD_TOKEN` | Your Discord bot token | *required* |
-| `DB_HOST` | MariaDB host | *required* |
-| `DB_PORT` | MariaDB port | `3306` |
-| `DB_NAME` | Database name | *required* |
-| `DB_USER` | Database user | *required* |
-| `DB_PASSWORD` | Database password | *required* |
-| `ALLOWED_GUILDS` | Comma-separated guild IDs (empty = all guilds) | *empty* |
-| `TAG_COOLDOWN_MS` | Cooldown between tag uses per channel in ms | `2500` |
-| `ACCENT_COLOR` | Hex color for embed accent (without #) | `B5C8B4` |
+| `DISCORD_TOKEN` | Bot token | *required* |
+| `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USER` / `DB_PASSWORD` | Database connection | *required* |
+| `ALLOWED_GUILDS` | Comma-separated guild IDs (empty = all) | *empty* |
+| `TAG_COOLDOWN_MS` | Tag cooldown per channel (ms) | `2500` |
+| `ACCENT_COLOR` | Embed accent hex color | `B5C8B4` |
+| `WARN_DECAY_DAYS` | Days until warnings expire | `30` |
+| `WARN_THRESHOLDS` | Escalation thresholds | `3:mute,5:kick,7:ban` |
+| `ANTISPAM_RATE_LIMIT` | Max messages in window | `5` |
+| `ANTISPAM_RATE_WINDOW` | Rate limit window (ms) | `5000` |
+| `LEVELING_XP_MIN` / `LEVELING_XP_MAX` | XP range per message | `15` / `25` |
+| `LEVELING_COOLDOWN` | XP cooldown (ms) | `60000` |
 
-### 2. Set up the database
+### 3. Set up database
 
 ```sql
 CREATE DATABASE betterghast CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
@@ -146,21 +133,17 @@ GRANT ALL PRIVILEGES ON betterghast.* TO 'betterghast'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-### 3. Build and run
+### 4. Build and run
 
 ```bash
 ./gradlew build && ./gradlew run
 ```
 
-### 4. Discord Bot Setup
+### 5. Discord Bot Setup
 
 1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
-2. Create a new application or select your existing one
-3. Go to **Bot** and enable **Message Content Intent**
-4. Go to **OAuth2 > URL Generator**
-5. Select scopes: `bot`, `applications.commands`
-6. Select permissions: `Send Messages`, `Manage Messages`, `Embed Links`, `Use External Emojis`, `Read Message History`
-7. Use the generated URL to invite the bot to your server
+2. Enable **Message Content Intent** and **Server Members Intent** under Bot
+3. Invite with scopes `bot` + `applications.commands` and permissions: Send Messages, Manage Messages, Manage Channels, Manage Roles, Moderate Members, Embed Links, Read Message History
 
 ---
 
@@ -172,7 +155,7 @@ FLUSH PRIVILEGES;
 - **HikariCP** for connection pooling
 - **MariaDB** as the database
 - **Logback** for logging
-- **Gradle** with Kotlin DSL
+- **Docker** for deployment
 
 ---
 

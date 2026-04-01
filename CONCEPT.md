@@ -1,7 +1,9 @@
 # BetterGhast v3.0 - Update Concept
 
+> **Status:** v3.0 is LIVE. Phases 1-3 are fully implemented. Phase 4 (Dashboard) and Phase 5 (API) are next.
+
 ## Vision
-BetterGhast will evolve from a simple tag bot into a full-featured server management bot. The focus is on moderation, community engagement, and automation.
+BetterGhast has evolved from a simple tag bot into a full-featured server management bot with moderation, community engagement, and automation.
 
 ---
 
