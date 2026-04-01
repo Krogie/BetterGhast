@@ -78,7 +78,36 @@ See [CONCEPT.md](CONCEPT.md) for the full detailed roadmap.
 
 ---
 
-## Installation
+## Quick Deploy (Docker)
+
+The fastest way to get BetterGhast running on your server:
+
+```bash
+git clone https://github.com/Krogie/BetterGhast.git
+cd BetterGhast
+bash deploy.sh
+```
+
+The deploy script will:
+1. Install Docker if needed
+2. Ask for your Discord token and create the `.env` config
+3. Start MariaDB + BetterGhast in Docker containers
+
+That's it. Bot is running.
+
+**Useful commands after deploy:**
+```bash
+docker compose logs -f bot     # View live logs
+docker compose restart bot     # Restart the bot
+docker compose down            # Stop everything
+git pull && docker compose up -d --build  # Update to latest version
+```
+
+---
+
+## Manual Installation
+
+If you prefer to run without Docker:
 
 ### Requirements
 
@@ -86,47 +115,15 @@ See [CONCEPT.md](CONCEPT.md) for the full detailed roadmap.
 - **MariaDB 10.6+** (or compatible MySQL)
 - A **Discord Bot Token** with Message Content Intent enabled
 
-### 1. Clone the repository
+### 1. Clone and configure
 
 ```bash
 git clone https://github.com/Krogie/BetterGhast.git
 cd BetterGhast
-```
-
-### 2. Set up the database
-
-Create a MariaDB database and user:
-
-```sql
-CREATE DATABASE betterghast CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-CREATE USER 'betterghast'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON betterghast.* TO 'betterghast'@'localhost';
-FLUSH PRIVILEGES;
-```
-
-### 3. Configure the bot
-
-Copy the example config and fill in your values:
-
-```bash
 cp .env.example .env
 ```
 
-Edit `.env`:
-
-```env
-DISCORD_TOKEN=your_bot_token_here
-
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=betterghast
-DB_USER=betterghast
-DB_PASSWORD=your_password
-
-ALLOWED_GUILDS=123456789,987654321
-TAG_COOLDOWN_MS=2500
-ACCENT_COLOR=B5C8B4
-```
+Edit `.env` with your values:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
@@ -140,24 +137,22 @@ ACCENT_COLOR=B5C8B4
 | `TAG_COOLDOWN_MS` | Cooldown between tag uses per channel in ms | `2500` |
 | `ACCENT_COLOR` | Hex color for embed accent (without #) | `B5C8B4` |
 
-### 4. Build and run
+### 2. Set up the database
 
-```bash
-# Build
-./gradlew build
-
-# Run
-./gradlew run
+```sql
+CREATE DATABASE betterghast CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE USER 'betterghast'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON betterghast.* TO 'betterghast'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
-Or build a fat JAR for deployment:
+### 3. Build and run
 
 ```bash
-./gradlew installDist
-./build/install/BetterGhast/bin/BetterGhast
+./gradlew build && ./gradlew run
 ```
 
-### 5. Discord Bot Setup
+### 4. Discord Bot Setup
 
 1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
 2. Create a new application or select your existing one
