@@ -95,6 +95,7 @@ object TagListener {
             "stats" -> onTagStats(event)
             "info" -> onTagInfo(event)
             "export" -> onExportTags(event)
+            "help" -> onHelp(event)
         }
     }
 
@@ -242,6 +243,38 @@ object TagListener {
         }
 
         event.replyContainer(sb.toString())
+    }
+
+    // ── /tags help ──
+
+    private fun onHelp(event: SlashCommandInteractionEvent) {
+        val help = """
+            ### BetterGhast v2.0 — Commands
+
+            **Tag Usage**
+            `!t keyword` — Trigger a tag via prefix
+
+            **Slash Commands** (require Manage Messages permission)
+            `/tags manage name:<keyword>` — Create or edit a tag
+            `/tags manage name:<keyword> remove:true` — Delete a tag
+            `/tags show` — List all tags (with pagination)
+            `/tags search query:<term>` — Search tags by keyword or content
+            `/tags stats` — Usage statistics with bar chart
+            `/tags info name:<keyword>` — Detailed info about a tag
+            `/tags export` — Export all tags as JSON file
+            `/tags help` — This help message
+
+            **Tag Styles**
+            When creating a tag, you can choose between:
+            - **Accent Embed** — Styled with accent color
+            - **No Accent** — Clean embed without color
+            - **Raw Message** — Plain text, no embed
+
+            **Links**
+            [Website](https://krogie.github.io/BetterGhast) — [GitHub](https://github.com/Krogie/BetterGhast)
+        """.trimIndent()
+
+        event.replyContainer(help)
     }
 
     // ── /tags info ──

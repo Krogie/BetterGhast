@@ -48,7 +48,8 @@ class App(private val config: AppConfig) {
                 SubcommandData("stats", "Show tag usage statistics."),
                 SubcommandData("info", "Show detailed info about a specific tag.")
                     .addOption(OptionType.STRING, "name", "The tag keyword.", true, true),
-                SubcommandData("export", "Export all tags as JSON.")
+                SubcommandData("export", "Export all tags as JSON."),
+                SubcommandData("help", "Show all available commands.")
             )
 
         for (guild in jda.guilds) {
