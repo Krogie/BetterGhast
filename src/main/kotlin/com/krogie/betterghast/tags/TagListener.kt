@@ -9,7 +9,7 @@ import dev.minn.jda.ktx.interactions.components.option
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.container.Container
-import net.dv8tion.jda.api.components.rows.ActionRow
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
