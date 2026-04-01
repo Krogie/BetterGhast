@@ -179,14 +179,13 @@ object ReactionRoleListener {
                         )
                     }
                     // Send as separate message with select menu
-                    channel.sendComponents(container).useComponentsV2()
-                        .addActionRow(menuBuilder.build())
-                        .queue({ msg ->
-                            ReactionRoleService.setMessageId(panelId, msg.idLong)
+                    channel.sendMessageComponents(container, ActionRow.of(menuBuilder.build())).useComponentsV2()
+                        .queue({ sentMsg: net.dv8tion.jda.api.entities.Message ->
+                            ReactionRoleService.setMessageId(panelId, sentMsg.idLong)
                             event.replyContainer("Panel posted in ${channel.asMention}.")
-                        }, { err ->
-                            logger.error("Failed to send panel $panelId: ${err.message}")
-                            event.replyContainer("Failed to post panel: ${err.message}")
+                        }, { e ->
+                            logger.error("Failed to send panel $panelId: ${e.message}")
+                            event.replyContainer("Failed to post panel: ${e.message}")
                         })
                 } else {
                     // Button style: up to 25 roles in 5 rows of 5
@@ -201,17 +200,16 @@ object ReactionRoleListener {
                         })
                     }
 
-                    var msg = channel.sendComponents(container).useComponentsV2()
-                    for (row in rows) {
-                        msg = msg.addComponents(row)
-                    }
-                    msg.queue({ sentMsg ->
-                        ReactionRoleService.setMessageId(panelId, sentMsg.idLong)
-                        event.replyContainer("Panel posted in ${channel.asMention}.")
-                    }, { err ->
-                        logger.error("Failed to send panel $panelId: ${err.message}")
-                        event.replyContainer("Failed to post panel: ${err.message}")
-                    })
+                    val allComponents = mutableListOf<net.dv8tion.jda.api.components.LayoutComponent>(container)
+                    allComponents.addAll(rows)
+                    channel.sendMessageComponents(allComponents).useComponentsV2()
+                        .queue({ sentMsg: net.dv8tion.jda.api.entities.Message ->
+                            ReactionRoleService.setMessageId(panelId, sentMsg.idLong)
+                            event.replyContainer("Panel posted in ${channel.asMention}.")
+                        }, { e ->
+                            logger.error("Failed to send panel $panelId: ${e.message}")
+                            event.replyContainer("Failed to post panel: ${e.message}")
+                        })
                 }
             }
 

@@ -106,7 +106,7 @@ object PollListener {
         }
 
         val member = event.member ?: return
-        if (poll.creatorId != member.idLong && !member.hasPermission(net.dv8tion.jda.api.Permission.MANAGE_GUILD)) {
+        if (poll.creatorId != member.idLong && !member.hasPermission(net.dv8tion.jda.api.Permission.MANAGE_SERVER)) {
             event.replyContainer("Only the poll creator or a server manager can close this poll.")
             return
         }
@@ -190,17 +190,16 @@ object PollListener {
         // Reply ephemerally to confirm, then post the poll publicly
         event.deferReply(true).queue()
 
-        var msg = event.channel.sendComponents(container).useComponentsV2()
-        for (row in rows) {
-            msg = msg.addComponents(row)
-        }
-        msg.queue({ sentMsg ->
-            PollService.setMessageId(pollId, sentMsg.idLong)
-            event.hook.editOriginal("Poll #$pollId posted!").queue()
-        }, { err ->
-            logger.error("Failed to post poll: ${err.message}")
-            event.hook.editOriginal("Failed to post poll: ${err.message}").queue()
-        })
+        val allComponents = mutableListOf<net.dv8tion.jda.api.components.LayoutComponent>(container)
+        allComponents.addAll(rows)
+        event.channel.sendMessageComponents(allComponents).useComponentsV2()
+            .queue({ sentMsg: net.dv8tion.jda.api.entities.Message ->
+                PollService.setMessageId(pollId, sentMsg.idLong)
+                event.hook.editOriginal("Poll #$pollId posted!").queue()
+            }, { e ->
+                logger.error("Failed to post poll: ${e.message}")
+                event.hook.editOriginal("Failed to post poll: ${e.message}").queue()
+            })
     }
 
     // ── Helpers ──

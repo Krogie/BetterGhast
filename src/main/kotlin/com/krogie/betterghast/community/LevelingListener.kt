@@ -59,7 +59,7 @@ object LevelingListener {
             targetChannel?.let { ch ->
                 val text = "${member.asMention} levelled up to **Level $newLevel**!"
                 val container = Container.of(TextDisplay.of(text)).withAccentColor(TagService.accentColor)
-                ch.sendComponents(container).useComponentsV2().queue(null) { err ->
+                ch.sendMessageComponents(container).useComponentsV2().queue(null) { err ->
                     logger.warn("Failed to send level-up message: ${err.message}")
                 }
             }
@@ -146,7 +146,7 @@ object LevelingListener {
 
         when (event.subcommandName) {
             "toggle" -> {
-                if (!member.hasPermission(Permission.MANAGE_GUILD)) {
+                if (!member.hasPermission(Permission.MANAGE_SERVER)) {
                     event.replyContainer("You need Manage Server permission.")
                     return
                 }
@@ -156,7 +156,7 @@ object LevelingListener {
             }
 
             "addrole" -> {
-                if (!member.hasPermission(Permission.MANAGE_GUILD)) {
+                if (!member.hasPermission(Permission.MANAGE_SERVER)) {
                     event.replyContainer("You need Manage Server permission.")
                     return
                 }
@@ -173,7 +173,7 @@ object LevelingListener {
             }
 
             "removerole" -> {
-                if (!member.hasPermission(Permission.MANAGE_GUILD)) {
+                if (!member.hasPermission(Permission.MANAGE_SERVER)) {
                     event.replyContainer("You need Manage Server permission.")
                     return
                 }
@@ -190,7 +190,7 @@ object LevelingListener {
             }
 
             "multiplier" -> {
-                if (!member.hasPermission(Permission.MANAGE_GUILD)) {
+                if (!member.hasPermission(Permission.MANAGE_SERVER)) {
                     event.replyContainer("You need Manage Server permission.")
                     return
                 }

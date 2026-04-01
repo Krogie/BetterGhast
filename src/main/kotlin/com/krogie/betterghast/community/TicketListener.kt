@@ -91,9 +91,8 @@ object TicketListener {
                 val closeBtn = Button.danger("ticket_close:${ticket.id}", "Close Ticket")
                 val claimBtn = Button.primary("ticket_claim:${ticket.id}", "Claim Ticket")
 
-                channel.sendComponents(container).useComponentsV2()
-                    .addComponents(ActionRow.of(closeBtn, claimBtn))
-                    .queue(null) { err -> logger.warn("Failed to send ticket header: ${err.message}") }
+                channel.sendMessageComponents(container, ActionRow.of(closeBtn, claimBtn)).useComponentsV2()
+                    .queue(null) { e -> logger.warn("Failed to send ticket header: ${e.message}") }
 
                 event.hook.editOriginal("Your ticket has been created: ${channel.asMention}").queue()
                 logger.info("Guild ${guild.idLong}: Ticket #${ticket.id} created for ${member.id} in ${channel.id}")
@@ -124,8 +123,7 @@ object TicketListener {
         val container = Container.of(TextDisplay.of(confirmText)).withAccentColor(TagService.accentColor)
         val confirmBtn = Button.danger("ticket_confirm_close:${ticket.id}", "Confirm Close")
 
-        event.replyComponents(container).useComponentsV2()
-            .addComponents(ActionRow.of(confirmBtn))
+        event.replyComponents(container, ActionRow.of(confirmBtn)).useComponentsV2()
             .setEphemeral(true).queue()
     }
 
@@ -254,8 +252,7 @@ object TicketListener {
                         val container = Container.of(TextDisplay.of(headerText)).withAccentColor(TagService.accentColor)
                         val closeBtn = Button.danger("ticket_close:${ticket.id}", "Close Ticket")
                         val claimBtn = Button.primary("ticket_claim:${ticket.id}", "Claim Ticket")
-                        channel.sendComponents(container).useComponentsV2()
-                            .addComponents(ActionRow.of(closeBtn, claimBtn))
+                        channel.sendMessageComponents(container, ActionRow.of(closeBtn, claimBtn)).useComponentsV2()
                             .queue()
                         event.hook.editOriginal("Ticket created: ${channel.asMention}").queue()
                     }, { err ->
@@ -281,8 +278,7 @@ object TicketListener {
                 val confirmText = "Are you sure you want to close this ticket?"
                 val container = Container.of(TextDisplay.of(confirmText)).withAccentColor(TagService.accentColor)
                 val confirmBtn = Button.danger("ticket_confirm_close:${ticket.id}", "Confirm Close")
-                event.replyComponents(container).useComponentsV2()
-                    .addComponents(ActionRow.of(confirmBtn))
+                event.replyComponents(container, ActionRow.of(confirmBtn)).useComponentsV2()
                     .setEphemeral(true).queue()
             }
 
@@ -331,7 +327,7 @@ object TicketListener {
 
             "setup" -> {
                 val member = event.member ?: return
-                if (!member.hasPermission(Permission.MANAGE_GUILD)) {
+                if (!member.hasPermission(Permission.MANAGE_SERVER)) {
                     event.replyContainer("You need Manage Server permission to set up tickets.")
                     return
                 }
@@ -356,12 +352,11 @@ object TicketListener {
                 val container = Container.of(TextDisplay.of(headerText)).withAccentColor(TagService.accentColor)
                 val createBtn = Button.primary("ticket_create", "Open Ticket")
 
-                targetChannel.sendComponents(container).useComponentsV2()
-                    .addComponents(ActionRow.of(createBtn))
+                targetChannel.sendMessageComponents(container, ActionRow.of(createBtn)).useComponentsV2()
                     .queue({
                         event.replyContainer("Ticket system set up in ${targetChannel.asMention}.")
-                    }, { err ->
-                        event.replyContainer("Failed to post panel: ${err.message}")
+                    }, { e ->
+                        event.replyContainer("Failed to post panel: ${e.message}")
                     })
             }
 

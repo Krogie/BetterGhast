@@ -46,7 +46,7 @@ object WelcomeListener {
             val rawMessage = config.message ?: "Welcome {user.mention} to **{server}**! You are member #{server.members}."
             val text = PlaceholderUtil.replace(rawMessage, member = event.member, channel = channel)
             val container = Container.of(TextDisplay.of(text)).withAccentColor(TagService.accentColor)
-            channel.sendComponents(container).useComponentsV2().queue(
+            channel.sendMessageComponents(container).useComponentsV2().queue(
                 null,
                 { err -> logger.warn("Guild ${guild.idLong}: Failed to send welcome message: ${err.message}") }
             )
@@ -81,7 +81,7 @@ object WelcomeListener {
                     .replace("{user.mention}", event.user.asMention)
             }
             val container = Container.of(TextDisplay.of(text)).withAccentColor(TagService.accentColor)
-            channel.sendComponents(container).useComponentsV2().queue(
+            channel.sendMessageComponents(container).useComponentsV2().queue(
                 null,
                 { err -> logger.warn("Guild ${guild.idLong}: Failed to send leave message: ${err.message}") }
             )
