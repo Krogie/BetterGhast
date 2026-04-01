@@ -184,6 +184,12 @@ Contributions are welcome! Feel free to open issues or submit pull requests.
 
 ---
 
+## Credits
+
+BetterGhast is a fork of [Ghastling](https://github.com/foenichs/Ghastling) by [foenichs](https://github.com/foenichs). The original project laid the foundation for the tag system, Discord integration, and database architecture that BetterGhast builds upon.
+
+---
+
 ## License
 
 This project is licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE) for details.
