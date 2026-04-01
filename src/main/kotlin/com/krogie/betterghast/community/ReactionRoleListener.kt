@@ -163,8 +163,6 @@ object ReactionRoleListener {
                 val headerText = "### ${panel.title}\n\nClick a button below to toggle a role:"
                 val container = Container.of(TextDisplay.of(headerText)).withAccentColor(TagService.accentColor)
 
-                val components = mutableListOf<net.dv8tion.jda.api.components.ItemComponent>()
-
                 if (panel.style == "dropdown") {
                     val menuBuilder = StringSelectMenu.create("rr_dropdown:${panel.id}")
                         .setPlaceholder("Select roles...")
@@ -172,7 +170,7 @@ object ReactionRoleListener {
                         .setMaxValues(panel.entries.size)
 
                     for (entry in panel.entries) {
-                        val optBuilder = net.dv8tion.jda.api.interactions.components.selections.SelectOption
+                        val optBuilder = net.dv8tion.jda.api.components.selects.SelectOption
                             .of(entry.label, entry.roleId.toString())
                         menuBuilder.addOptions(
                             if (entry.description != null) optBuilder.withDescription(entry.description) else optBuilder
@@ -200,8 +198,7 @@ object ReactionRoleListener {
                         })
                     }
 
-                    val allComponents = mutableListOf<net.dv8tion.jda.api.components.LayoutComponent>(container)
-                    allComponents.addAll(rows)
+                    val allComponents = mutableListOf(container, *rows.toTypedArray())
                     channel.sendMessageComponents(allComponents).useComponentsV2()
                         .queue({ sentMsg: net.dv8tion.jda.api.entities.Message ->
                             ReactionRoleService.setMessageId(panelId, sentMsg.idLong)

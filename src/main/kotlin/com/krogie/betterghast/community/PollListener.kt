@@ -190,8 +190,7 @@ object PollListener {
         // Reply ephemerally to confirm, then post the poll publicly
         event.deferReply(true).queue()
 
-        val allComponents = mutableListOf<net.dv8tion.jda.api.components.LayoutComponent>(container)
-        allComponents.addAll(rows)
+        val allComponents = mutableListOf(container, *rows.toTypedArray())
         event.channel.sendMessageComponents(allComponents).useComponentsV2()
             .queue({ sentMsg: net.dv8tion.jda.api.entities.Message ->
                 PollService.setMessageId(pollId, sentMsg.idLong)

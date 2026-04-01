@@ -31,7 +31,7 @@ fun main() {
 
         // Background jobs
         WarningService.startDecayJob()
-        PollService.startExpiryJob()
+        PollService.startExpiryJob { /* expired polls handled by listener */ }
 
         val app = App(config)
         Runtime.getRuntime().addShutdownHook(Thread {

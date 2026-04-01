@@ -182,7 +182,7 @@ object LevelingService {
         return transaction {
             UserLevels.selectAll().where { UserLevels.guildId eq guildId }
                 .orderBy(UserLevels.xp, SortOrder.DESC)
-                .limit(pageSize, (page * pageSize).toLong())
+                .limit(pageSize).offset((page * pageSize).toLong())
                 .map { rowToUserLevel(it) }
         }
     }
