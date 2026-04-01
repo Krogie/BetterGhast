@@ -2,6 +2,7 @@ package com.krogie.betterghast.tags
 
 import com.krogie.betterghast.config.AppConfig
 import com.krogie.betterghast.db.Guilds
+import com.krogie.betterghast.db.TagUsageLogs
 import com.krogie.betterghast.db.Tags
 import dev.minn.jda.ktx.interactions.components.MediaGallery
 import kotlinx.coroutines.CoroutineScope
@@ -26,24 +27,22 @@ data class Tag(
     val keywords: String,
     val content: String,
     val style: TagStyle,
-    val usages: Long
+    val usages: Long,
+    val creatorId: Long? = null,
+    val requiredRoleId: Long? = null,
+    val createdAt: Long = 0
 ) {
     val keywordList: List<String> by lazy { keywords.split(",").map { it.trim() } }
 
-    /**
-     * Builds the container from the tag content, respecting custom formatting rules.
-     */
     val cachedContainer: Container? by lazy {
         if (style == TagStyle.Raw) return@lazy null
 
-        // Detect if content ends with a URL
         val lastSep = content.lastIndexOf("\n\n")
         var text = content
         var mediaUrl: String? = null
 
         if (lastSep != -1) {
             val suffix = content.substring(lastSep + 2).trim()
-            // Validate URL
             if (suffix.startsWith("http") && !suffix.any { it.isWhitespace() }) {
                 text = content.take(lastSep)
                 mediaUrl = suffix
@@ -52,14 +51,12 @@ data class Tag(
 
         val components = mutableListOf<ContainerChildComponent>()
 
-        // Moving headers into separate text display
         if (text.startsWith("###") && text.contains("\n")) {
             val splitIndex = text.indexOf("\n")
             val header = text.take(splitIndex).trim()
             val body = text.substring(splitIndex + 1).trim()
 
             components.add(TextDisplay.of(header))
-
             if (body.isNotEmpty()) {
                 components.add(TextDisplay.of(body))
             }
@@ -67,7 +64,6 @@ data class Tag(
             components.add(TextDisplay.of(text))
         }
 
-        // Moving URLs into media galleries
         if (mediaUrl != null) {
             components.add(MediaGallery {
                 item(mediaUrl)
@@ -87,7 +83,6 @@ object TagService {
     private val logger = LoggerFactory.getLogger(TagService::class.java)
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    // Cache: GuildID -> { Keyword -> Tag }
     private val cache = ConcurrentHashMap<Long, ConcurrentHashMap<String, Tag>>()
     private val cooldowns = ConcurrentHashMap<String, Long>()
 
@@ -108,9 +103,6 @@ object TagService {
 
     fun isAllowedGuild(guildId: Long): Boolean = allowedGuilds.isEmpty() || guildId in allowedGuilds
 
-    /**
-     * Checks if a specific channel and tag combination is on cooldown, returning remaining time in ms.
-     */
     fun checkCooldown(channelId: Long, primary: String): Long {
         val key = "${channelId}_$primary"
         val now = System.currentTimeMillis()
@@ -125,16 +117,15 @@ object TagService {
         return 0L
     }
 
-    /**
-     * Retrieves a tag object by keyword for a specific guild, if it exists.
-     */
     fun find(guildId: Long, keyword: String): Tag? {
         return getGuildCache(guildId)[keyword.trim().lowercase()]
     }
 
-    /**
-     * Generates autocomplete choices for a search query, matching against both primary keys and aliases.
-     */
+    fun checkPermission(tag: Tag, memberRoleIds: List<Long>): Boolean {
+        val requiredRole = tag.requiredRoleId ?: return true
+        return requiredRole in memberRoleIds
+    }
+
     fun autocomplete(guildId: Long, query: String): List<Command.Choice> {
         val distinctTags = getGuildCache(guildId).values.distinctBy { it.primary }
         val needle = query.trim().lowercase()
@@ -145,16 +136,10 @@ object TagService {
             .toList()
     }
 
-    /**
-     * Retrieves all unique tag objects associated with a specific guild.
-     */
     fun listTags(guildId: Long): List<Tag> {
         return getGuildCache(guildId).values.distinctBy { it.primary }
     }
 
-    /**
-     * Searches tags by keyword or content for a specific guild.
-     */
     fun searchTags(guildId: Long, query: String): List<Tag> {
         val needle = query.trim().lowercase()
         if (needle.isBlank()) return emptyList()
@@ -168,9 +153,6 @@ object TagService {
             .sortedByDescending { it.usages }
     }
 
-    /**
-     * Checks if any of the provided new keywords conflict with existing tags in the guild.
-     */
     fun findConflicts(guildId: Long, newKeywords: String, ignorePrimary: String? = null): Map<String, String> {
         val map = getGuildCache(guildId)
         val inputList = newKeywords.split(",").map { it.trim().lowercase() }.filter { it.isNotEmpty() }
@@ -185,10 +167,10 @@ object TagService {
         return conflicts
     }
 
-    /**
-     * Creates or updates a tag in the database and invalidates the cache.
-     */
-    fun createOrUpdate(guildId: Long, rawKeywords: String, content: String, style: TagStyle, oldPrimary: String? = null): String {
+    fun createOrUpdate(
+        guildId: Long, rawKeywords: String, content: String, style: TagStyle,
+        oldPrimary: String? = null, creatorId: Long? = null, requiredRoleId: Long? = null
+    ): String {
         if (!isAllowedGuild(guildId)) throw IllegalArgumentException("This guild is not authorized to use BetterGhast.")
         if (content.length > MAX_CONTENT_LEN) throw IllegalArgumentException("Content too long (${content.length} > $MAX_CONTENT_LEN)")
 
@@ -204,9 +186,11 @@ object TagService {
         val primary = cleanKw.split(",").first().trim()
         val map = getGuildCache(guildId)
 
-        // Retrieve usages from existing cache to preserve count during update
         val existingTag = if (oldPrimary != null) map[oldPrimary.lowercase()] else map[primary.lowercase()]
         val currentUsages = existingTag?.usages ?: 0L
+        val finalCreatorId = creatorId ?: existingTag?.creatorId
+        val finalRequiredRoleId = requiredRoleId ?: existingTag?.requiredRoleId
+        val finalCreatedAt = existingTag?.createdAt ?: System.currentTimeMillis()
 
         transaction {
             if (Guilds.selectAll().where { Guilds.id eq guildId }.empty()) {
@@ -223,33 +207,39 @@ object TagService {
                 it[Tags.keywords] = cleanKw
                 it[Tags.content] = content
                 it[Tags.style] = style.name
+                it[Tags.creatorId] = finalCreatorId
+                it[Tags.requiredRoleId] = finalRequiredRoleId
+                it[Tags.createdAt] = finalCreatedAt
             }
         }
 
-        existingTag?.keywordList?.forEach { k ->
-            map.remove(k.lowercase())
-        }
+        existingTag?.keywordList?.forEach { k -> map.remove(k.lowercase()) }
 
         val newTag = Tag(
-            guildId = guildId,
-            primary = primary,
-            keywords = cleanKw,
-            content = content,
-            style = style,
-            usages = currentUsages
+            guildId = guildId, primary = primary, keywords = cleanKw,
+            content = content, style = style, usages = currentUsages,
+            creatorId = finalCreatorId, requiredRoleId = finalRequiredRoleId, createdAt = finalCreatedAt
         )
 
-        newTag.keywordList.forEach { k ->
-            map[k.lowercase()] = newTag
-        }
+        newTag.keywordList.forEach { k -> map[k.lowercase()] = newTag }
 
         logger.info("Guild $guildId: Tag upserted '$primary' (old: '$oldPrimary')")
         return primary
     }
 
-    /**
-     * Deletes a tag from the database and invalidates the cache.
-     */
+    fun setPermission(guildId: Long, primary: String, roleId: Long?): Boolean {
+        val tag = find(guildId, primary) ?: return false
+        transaction {
+            Tags.update({ (Tags.guildId eq guildId) and (Tags.primaryKeyword eq primary) }) {
+                it[requiredRoleId] = roleId
+            }
+        }
+        val updated = tag.copy(requiredRoleId = roleId)
+        val map = getGuildCache(guildId)
+        updated.keywordList.forEach { k -> map[k.lowercase()] = updated }
+        return true
+    }
+
     fun delete(guildId: Long, primary: String): Boolean {
         val deleted = transaction {
             Tags.deleteWhere { (Tags.guildId eq guildId) and (Tags.primaryKeyword eq primary) } > 0
@@ -257,36 +247,35 @@ object TagService {
         if (deleted) {
             val map = getGuildCache(guildId)
             val tag = map[primary.lowercase()]
-
-            tag?.keywordList?.forEach { k ->
-                map.remove(k.lowercase())
-            }
-
+            tag?.keywordList?.forEach { k -> map.remove(k.lowercase()) }
             logger.info("Guild $guildId: Tag deleted '$primary'")
         }
         return deleted
     }
 
-    /**
-     * Asynchronously increments the usage counter for a specific tag.
-     */
-    fun incrementUsage(guildId: Long, primary: String) {
+    fun incrementUsage(guildId: Long, primary: String, userId: Long = 0, channelId: Long = 0) {
         scope.launch {
             try {
                 transaction {
                     Tags.update({ (Tags.guildId eq guildId) and (Tags.primaryKeyword eq primary) }) {
                         with(SqlExpressionBuilder) { it.update(usages, usages + 1) }
                     }
+                    if (userId != 0L) {
+                        TagUsageLogs.insert {
+                            it[TagUsageLogs.guildId] = guildId
+                            it[tagPrimary] = primary
+                            it[TagUsageLogs.userId] = userId
+                            it[TagUsageLogs.channelId] = channelId
+                            it[usedAt] = System.currentTimeMillis()
+                        }
+                    }
                 }
 
                 val map = getGuildCache(guildId)
                 val tag = map[primary.lowercase()]
-
                 if (tag != null) {
                     val newTag = tag.copy(usages = tag.usages + 1)
-                    newTag.keywordList.forEach { k ->
-                        map[k.lowercase()] = newTag
-                    }
+                    newTag.keywordList.forEach { k -> map[k.lowercase()] = newTag }
                 }
             } catch (e: Exception) {
                 logger.error("Failed to increment usage: ${e.message}")
@@ -294,32 +283,48 @@ object TagService {
         }
     }
 
-    /**
-     * Returns detailed info about a specific tag including all aliases and usage.
-     */
-    fun getTagInfo(guildId: Long, keyword: String): Tag? {
-        return find(guildId, keyword)
+    // ── Analytics ──
+
+    fun getTopUsers(guildId: Long, limit: Int = 10): List<Pair<Long, Long>> {
+        return transaction {
+            TagUsageLogs.select(TagUsageLogs.userId, TagUsageLogs.userId.count())
+                .where { TagUsageLogs.guildId eq guildId }
+                .groupBy(TagUsageLogs.userId)
+                .orderBy(TagUsageLogs.userId.count() to SortOrder.DESC)
+                .limit(limit)
+                .map { it[TagUsageLogs.userId] to it[TagUsageLogs.userId.count()] }
+        }
     }
 
-    /**
-     * Exports all tags of a guild as a JSON-compatible list of maps.
-     */
+    fun getUsageTrends(guildId: Long, days: Int = 7): Map<String, Long> {
+        val since = System.currentTimeMillis() - (days * 86400000L)
+        return transaction {
+            TagUsageLogs.selectAll()
+                .where { (TagUsageLogs.guildId eq guildId) and (TagUsageLogs.usedAt greaterEq since) }
+                .groupBy {
+                    val day = (it[TagUsageLogs.usedAt] - since) / 86400000L
+                    "Day ${day + 1}"
+                }
+                .mapValues { it.value.size.toLong() }
+        }
+    }
+
+    fun getUnusedTags(guildId: Long): List<Tag> {
+        return listTags(guildId).filter { it.usages == 0L }
+    }
+
+    fun getTagInfo(guildId: Long, keyword: String): Tag? = find(guildId, keyword)
+
     fun exportTags(guildId: Long): List<Map<String, Any>> {
         return listTags(guildId).map { tag ->
             mapOf(
-                "primary" to tag.primary,
-                "keywords" to tag.keywords,
-                "content" to tag.content,
-                "style" to tag.style.name,
+                "primary" to tag.primary, "keywords" to tag.keywords,
+                "content" to tag.content, "style" to tag.style.name,
                 "usages" to tag.usages
             )
         }
     }
 
-    /**
-     * Imports tags from a list of maps, skipping conflicts.
-     * Returns the count of successfully imported tags.
-     */
     fun importTags(guildId: Long, tags: List<Map<String, String>>): Int {
         if (!isAllowedGuild(guildId)) return 0
         var imported = 0
@@ -327,10 +332,8 @@ object TagService {
             val keywords = tagData["keywords"] ?: continue
             val content = tagData["content"] ?: continue
             val style = runCatching { TagStyle.valueOf(tagData["style"] ?: "Accent") }.getOrDefault(TagStyle.Accent)
-
             val conflicts = findConflicts(guildId, keywords)
             if (conflicts.isNotEmpty()) continue
-
             try {
                 createOrUpdate(guildId, keywords, content, style)
                 imported++
@@ -341,9 +344,6 @@ object TagService {
         return imported
     }
 
-    /**
-     * Fetches or constructs the keyword-to-tag map for a guild from the database.
-     */
     private fun getGuildCache(guildId: Long): ConcurrentHashMap<String, Tag> {
         cache[guildId]?.let { return it }
         val newMap = ConcurrentHashMap<String, Tag>()
@@ -359,15 +359,15 @@ object TagService {
         return cache.computeIfAbsent(guildId) { newMap }
     }
 
-    /**
-     * Maps a database result row to a Tag domain object.
-     */
     private fun rowToTag(row: ResultRow) = Tag(
         guildId = row[Tags.guildId],
         primary = row[Tags.primaryKeyword],
         keywords = row[Tags.keywords],
         content = row[Tags.content],
         style = runCatching { TagStyle.valueOf(row[Tags.style]) }.getOrDefault(TagStyle.Accent),
-        usages = row[Tags.usages]
+        usages = row[Tags.usages],
+        creatorId = row[Tags.creatorId],
+        requiredRoleId = row[Tags.requiredRoleId],
+        createdAt = row[Tags.createdAt]
     )
 }

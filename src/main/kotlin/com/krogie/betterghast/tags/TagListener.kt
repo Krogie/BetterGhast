@@ -50,6 +50,10 @@ object TagListener {
         val guildId = event.guild.idLong
         val tag = TagService.find(guildId, keyword) ?: return
 
+        // Permission check
+        val member = event.member ?: return
+        if (!TagService.checkPermission(tag, member.roles.map { it.idLong })) return
+
         val cooldown = TagService.checkCooldown(event.channel.idLong, tag.primary)
         if (cooldown > 0) {
             deleteSilently(event.message, guildId)
@@ -59,15 +63,30 @@ object TagListener {
         deleteSilently(event.message, guildId)
 
         try {
+            // Apply placeholders
+            val channel = event.channel as? net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
+            val resolvedContent = com.krogie.betterghast.util.PlaceholderUtil.replace(tag.content, member, channel)
+
             val container = tag.cachedContainer
             val action = if (container != null) {
-                event.channel.sendMessageComponents(container).useComponentsV2()
+                // For templates with placeholders, rebuild container with resolved content
+                if (resolvedContent != tag.content) {
+                    val resolved = tag.copy(content = resolvedContent)
+                    val newContainer = resolved.cachedContainer
+                    if (newContainer != null) {
+                        event.channel.sendMessageComponents(newContainer).useComponentsV2()
+                    } else {
+                        event.channel.sendMessage(resolvedContent)
+                    }
+                } else {
+                    event.channel.sendMessageComponents(container).useComponentsV2()
+                }
             } else {
-                event.channel.sendMessage(tag.content)
+                event.channel.sendMessage(resolvedContent)
             }
 
             action.queue({
-                TagService.incrementUsage(guildId, tag.primary)
+                TagService.incrementUsage(guildId, tag.primary, event.author.idLong, event.channel.idLong)
             }, { error ->
                 logger.warn("Failed to send tag in Guild $guildId: ${error.message}")
             })
@@ -79,7 +98,7 @@ object TagListener {
     }
 
     private fun onAutocomplete(event: CommandAutoCompleteInteractionEvent) {
-        if (event.subcommandName !in listOf("manage", "info")) return
+        if (event.subcommandName !in listOf("manage", "info", "permissions")) return
         val guild = event.guild ?: return
         val query = event.focusedOption.value
         event.replyChoices(TagService.autocomplete(guild.idLong, query)).queue(null) { error ->
@@ -96,6 +115,8 @@ object TagListener {
             "info" -> onTagInfo(event)
             "export" -> onExportTags(event)
             "help" -> onHelp(event)
+            "analytics" -> onAnalytics(event)
+            "permissions" -> onPermissions(event)
         }
     }
 
@@ -245,32 +266,99 @@ object TagListener {
         event.replyContainer(sb.toString())
     }
 
+    // ── /tags analytics ──
+
+    private fun onAnalytics(event: SlashCommandInteractionEvent) {
+        val guild = event.guild ?: return
+
+        val topUsers = TagService.getTopUsers(guild.idLong)
+        val trends = TagService.getUsageTrends(guild.idLong)
+        val unused = TagService.getUnusedTags(guild.idLong)
+
+        val sb = StringBuilder("### Tag Analytics for ${guild.name}\n\n")
+
+        if (topUsers.isNotEmpty()) {
+            sb.append("**Top Users:**\n")
+            for ((i, pair) in topUsers.withIndex()) {
+                sb.append("${i + 1}. <@${pair.first}> — ${pair.second} uses\n")
+            }
+        }
+
+        if (trends.isNotEmpty()) {
+            sb.append("\n**Usage (last 7 days):**\n")
+            for ((day, count) in trends) {
+                sb.append("$day: $count uses\n")
+            }
+        }
+
+        if (unused.isNotEmpty()) {
+            sb.append("\n**Unused tags (${unused.size}):** ")
+            sb.append(unused.take(10).joinToString(", ") { "`${it.primary}`" })
+            if (unused.size > 10) sb.append(" ...and ${unused.size - 10} more")
+        }
+
+        if (topUsers.isEmpty() && trends.isEmpty()) {
+            sb.append("No usage data yet. Tags need to be used to generate analytics.")
+        }
+
+        event.replyContainer(sb.toString())
+    }
+
+    // ── /tags permissions ──
+
+    private fun onPermissions(event: SlashCommandInteractionEvent) {
+        val guild = event.guild ?: return
+        val name = event.getOption("name")?.asString ?: return
+        val role = event.getOption("role")?.asRole
+
+        val tag = TagService.find(guild.idLong, name)
+        if (tag == null) {
+            event.replyContainer("No tag found with keyword `$name`.")
+            return
+        }
+
+        if (role != null) {
+            TagService.setPermission(guild.idLong, tag.primary, role.idLong)
+            event.replyContainer("Tag `${tag.primary}` now requires role **${role.name}** to use.")
+        } else {
+            val current = tag.requiredRoleId
+            if (current != null) {
+                val roleMention = "<@&$current>"
+                event.replyContainer("Tag `${tag.primary}` requires role $roleMention.\n\nTo remove the restriction, use `/tags permissions name:${tag.primary} role:@everyone`.")
+            } else {
+                event.replyContainer("Tag `${tag.primary}` has no role restriction (everyone can use it).")
+            }
+        }
+    }
+
     // ── /tags help ──
 
     private fun onHelp(event: SlashCommandInteractionEvent) {
         val help = """
-            ### BetterGhast v2.0 — Commands
+            ### BetterGhast v3.0 — Commands
 
-            **Tag Usage**
-            `!t keyword` — Trigger a tag via prefix
+            **Tags** — `!t keyword` or slash commands
+            `/tags manage` `/tags show` `/tags search` `/tags stats`
+            `/tags info` `/tags export` `/tags analytics` `/tags permissions`
 
-            **Slash Commands** (require Manage Messages permission)
-            `/tags manage name:<keyword>` — Create or edit a tag
-            `/tags manage name:<keyword> remove:true` — Delete a tag
-            `/tags show` — List all tags (with pagination)
-            `/tags search query:<term>` — Search tags by keyword or content
-            `/tags stats` — Usage statistics with bar chart
-            `/tags info name:<keyword>` — Detailed info about a tag
-            `/tags export` — Export all tags as JSON file
-            `/tags help` — This help message
+            **Moderation**
+            `/warn @user reason` — Issue warning
+            `/warnings @user` — View warnings
+            `/clearwarning id` — Remove warning
+            `/autoresponse add|remove|list|toggle` — Auto-responses
+            `/antispam toggle|ratelimit|linkfilter|invitefilter|whitelist|status`
 
-            **Tag Styles**
-            When creating a tag, you can choose between:
-            - **Accent Embed** — Styled with accent color
-            - **No Accent** — Clean embed without color
-            - **Raw Message** — Plain text, no embed
+            **Community**
+            `/welcome channel|message|leave|autorole|dm|test|status`
+            `/rolepanel create|addrole|send|delete|list` — Reaction roles
+            `/ticket create|close|claim|transcript|setup`
+            `/rank [@user]` — View level & XP
+            `/top [page]` — Server leaderboard
+            `/xp toggle|addrole|removerole|multiplier|status`
+            `/poll question options [duration] [anonymous] [multichoice]`
 
-            **Links**
+            **Template Placeholders:** `{user}` `{channel}` `{server}` `{date}` `{mention}`
+
             [Website](https://betterghast.krogie.com) — [GitHub](https://github.com/Krogie/BetterGhast)
         """.trimIndent()
 
