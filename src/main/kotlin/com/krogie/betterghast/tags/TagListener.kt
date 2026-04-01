@@ -9,6 +9,7 @@ import dev.minn.jda.ktx.interactions.components.option
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.container.Container
+import net.dv8tion.jda.api.components.rows.ActionRow
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
@@ -119,10 +120,9 @@ object TagListener {
         val container = Container.of(TextDisplay.of(pageContent)).withAccentColor(TagService.accentColor)
         val buttons = buildPageButtons(guild.idLong, 1, totalPages)
 
-        event.replyComponents(container).useComponentsV2().setEphemeral(true)
-            .addActionRow(buttons)
-            .queue(null) { error ->
-                logger.warn("Failed to send tag list: {}", error.message)
+        event.replyComponents(container, ActionRow.of(buttons)).useComponentsV2().setEphemeral(true)
+            .queue(null) { e ->
+                logger.warn("Failed to send tag list: {}", e.message)
             }
     }
 
@@ -323,13 +323,12 @@ object TagListener {
                     TextDisplay.of("### Delete tag `${existing.primary}`?\nThis action cannot be undone. The tag has been used **${existing.usages}** time(s).")
                 ).withAccentColor(TagService.accentColor)
 
-                event.replyComponents(container).useComponentsV2().setEphemeral(true)
-                    .addActionRow(
+                event.replyComponents(container, ActionRow.of(
                         Button.danger("tag_delete_confirm:${guildId}:${existing.primary}", "Delete"),
                         Button.secondary("tag_delete_cancel", "Cancel")
-                    )
-                    .queue(null) { error ->
-                        logger.warn("Failed to send delete confirmation: {}", error.message)
+                    )).useComponentsV2().setEphemeral(true)
+                    .queue(null) { e ->
+                        logger.warn("Failed to send delete confirmation: {}", e.message)
                     }
             } else {
                 event.replyContainer("Couldn't find a tag with keyword `$name`.")
@@ -404,10 +403,9 @@ object TagListener {
                 val container = Container.of(TextDisplay.of(pageContent)).withAccentColor(TagService.accentColor)
                 val buttons = buildPageButtons(guildId, page, totalPages)
 
-                event.editComponents(container).setReplace(true)
-                    .setActionRow(buttons)
-                    .queue(null) { error ->
-                        logger.warn("Failed to update page: {}", error.message)
+                event.editComponents(container, ActionRow.of(buttons)).setReplace(true)
+                    .queue(null) { e ->
+                        logger.warn("Failed to update page: {}", e.message)
                     }
             }
         }
