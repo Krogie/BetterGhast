@@ -51,6 +51,7 @@ class App(private val config: AppConfig) {
         TicketListener.register(jda)
         LevelingListener.register(jda)
         PollListener.register(jda)
+        AskListener.register(jda)
     }
 
     private fun registerCommands(jda: JDA) {
@@ -210,10 +211,14 @@ class App(private val config: AppConfig) {
         // ── /help ──
         val helpCmd = Commands.slash("help", "Show all BetterGhast commands and documentation.")
 
+        // ── /ask ──
+        val askCmd = Commands.slash("ask", "Ask KrogieBot (AI) a question about BetterGhast.")
+            .addOption(OptionType.STRING, "question", "Your question.", true)
+
         val allCommands = listOf(
             tagsCmd, autoResponseCmd, warnCmd, warningsCmd, clearWarningCmd,
             antispamCmd, welcomeCmd, rolepanelCmd, ticketCmd,
-            rankCmd, topCmd, xpCmd, pollCmd, helpCmd
+            rankCmd, topCmd, xpCmd, pollCmd, helpCmd, askCmd
         )
 
         for (guild in jda.guilds) {

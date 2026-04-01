@@ -15,7 +15,9 @@ data class AppConfig(
     // Leveling
     val levelingXpMin: Int,
     val levelingXpMax: Int,
-    val levelingCooldown: Long
+    val levelingCooldown: Long,
+    // AI
+    val claudeApiKey: String
 ) {
     companion object {
         fun load(): AppConfig {
@@ -51,7 +53,8 @@ data class AppConfig(
                 antiSpamRateWindow = Config.getLong("ANTISPAM_RATE_WINDOW", 5000L),
                 levelingXpMin = Config.getInt("LEVELING_XP_MIN", 15),
                 levelingXpMax = Config.getInt("LEVELING_XP_MAX", 25),
-                levelingCooldown = Config.getLong("LEVELING_COOLDOWN", 60000L)
+                levelingCooldown = Config.getLong("LEVELING_COOLDOWN", 60000L),
+                claudeApiKey = Config.get("CLAUDE_API_KEY", "")
             )
         }
     }

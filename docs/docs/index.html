@@ -76,7 +76,7 @@
     .content {
       margin-left: 260px;
       padding: 3rem 4rem;
-      max-width: 900px;
+      max-width: 1000px;
       flex: 1;
     }
     h1 {
@@ -198,9 +198,15 @@
     <a href="#leveling">Leveling &amp; XP</a>
     <a href="#polls">Polls</a>
 
+    <div class="sidebar-section">AI Assistant</div>
+    <a href="#krogiebot">Ask KrogieBot</a>
+
     <div class="sidebar-section">Reference</div>
+    <a href="#quick-actions">Quick Actions</a>
+    <a href="#faq">FAQ</a>
     <a href="#config">Configuration</a>
     <a href="#all-commands">All Commands</a>
+    <a href="#report-issues">Report Issues</a>
   </nav>
 
   <!-- Content -->
@@ -516,7 +522,106 @@ https://example.com/welcome-banner.png</code></pre>
       <li>Final results are posted when the poll closes.</li>
     </ul>
 
+    <!-- ═══════ AI ASSISTANT ═══════ -->
+
+    <h2 id="krogiebot">Ask KrogieBot <span class="badge badge-public">Public</span></h2>
+    <p>BetterGhast includes a built-in AI assistant powered by Claude. Ask any question about the bot, commands, setup, or troubleshooting &mdash; right in Discord.</p>
+
+    <table class="cmd-table">
+      <tr><th>Command</th><th>Description</th></tr>
+      <tr><td><code>/ask question:How do I set up reaction roles?</code></td><td>Get a step-by-step answer from KrogieBot</td></tr>
+      <tr><td><code>/ask question:What placeholders can I use in tags?</code></td><td>Get a list of all template variables</td></tr>
+      <tr><td><code>/ask question:How does XP calculation work?</code></td><td>Get a detailed explanation of the leveling formula</td></tr>
+    </table>
+
+    <h3>What KrogieBot Knows</h3>
+    <ul>
+      <li>All BetterGhast commands, options, and permissions</li>
+      <li>Setup and configuration guides</li>
+      <li>Troubleshooting common issues</li>
+      <li>Tag templates, placeholders, and formatting</li>
+      <li>Moderation, leveling, tickets, polls &mdash; everything in these docs</li>
+    </ul>
+
+    <div class="tip"><strong>Tip:</strong> KrogieBot responds in the same channel, visible only to you (ephemeral). You can ask follow-up questions by running <code>/ask</code> again.</div>
+
     <!-- ═══════ REFERENCE ═══════ -->
+
+    <h2 id="quick-actions">Quick Actions</h2>
+    <p>Common setup tasks you can copy-paste:</p>
+
+    <h3>Set Up Welcome Messages</h3>
+    <pre><code>/welcome channel channel:#welcome
+/welcome message text:Welcome to {server}, {user.mention}! You are member #{server.members}.
+/welcome leave text:{user} has left the server. We now have {server.members} members.
+/welcome autorole role:@Member
+/welcome test</code></pre>
+
+    <h3>Create Reaction Roles</h3>
+    <pre><code>/rolepanel create title:Pick your roles! style:buttons
+/rolepanel addrole panel:1 role:@Gamer label:Gamer
+/rolepanel addrole panel:1 role:@Artist label:Artist
+/rolepanel addrole panel:1 role:@Music label:Music
+/rolepanel send panel:1</code></pre>
+
+    <h3>Enable Anti-Spam</h3>
+    <pre><code>/antispam toggle
+/antispam invitefilter enabled:true
+/antispam linkfilter enabled:true
+/antispam whitelist action:add domain:youtube.com
+/antispam status</code></pre>
+
+    <h3>Start Leveling System</h3>
+    <pre><code>/xp toggle
+/xp addrole level:5 role:@Active
+/xp addrole level:10 role:@Regular
+/xp addrole level:25 role:@Veteran
+/xp multiplier channel:#general multiplier:1.5
+/xp status</code></pre>
+
+    <h3>Create a Poll</h3>
+    <pre><code>/poll question:What game should we play tonight? options:Minecraft,Valorant,Fortnite,Other duration:2h</code></pre>
+
+    <h3>Set Up Ticket System</h3>
+    <pre><code>/ticket setup supportrole:@Support categories:general,bug,feedback</code></pre>
+
+    <h2 id="faq">Frequently Asked Questions</h2>
+
+    <h3>Why aren't slash commands showing up?</h3>
+    <p>This usually happens when the bot was just added. Try these steps:</p>
+    <ol>
+      <li>Wait 1-2 minutes &mdash; Discord caches commands and updates can take time</li>
+      <li>Restart Discord (Ctrl+R on desktop)</li>
+      <li>Re-invite the bot with the correct scopes: <code>bot</code> + <code>applications.commands</code></li>
+      <li>Check that the bot has permission to register commands in your server</li>
+    </ol>
+
+    <h3>Why does the bot say "Disallowed Intents"?</h3>
+    <p>You need to enable privileged intents in the <a href="https://discord.com/developers/applications" style="color:#B5C8B4">Discord Developer Portal</a>:</p>
+    <ol>
+      <li>Go to your application &gt; Bot</li>
+      <li>Enable <strong>Message Content Intent</strong></li>
+      <li>Enable <strong>Server Members Intent</strong></li>
+      <li>Save and restart the bot</li>
+    </ol>
+
+    <h3>How do I reset all warnings for a user?</h3>
+    <p>Use <code>/warnings @user</code> to see all warning IDs, then <code>/clearwarning id:&lt;number&gt;</code> for each one. There is no bulk-clear command yet &mdash; this prevents accidental mass deletion.</p>
+
+    <h3>Can I use the bot on multiple servers?</h3>
+    <p>Yes! If <code>ALLOWED_GUILDS</code> is empty in your <code>.env</code>, the bot works on every server it's invited to. To restrict it, list specific guild IDs separated by commas.</p>
+
+    <h3>How do template placeholders work?</h3>
+    <p>Placeholders like <code>{user}</code>, <code>{server}</code>, <code>{channel}</code> are replaced with real values when a tag is triggered. They work in tag content and welcome messages. See the <a href="#tags-templates" style="color:#B5C8B4">Templates &amp; Placeholders</a> section for the full list.</p>
+
+    <h3>How do I back up my tags?</h3>
+    <p>Use <code>/tags export</code> &mdash; this downloads all your server's tags as a JSON file. You can save this file and re-import later if needed.</p>
+
+    <h3>What happens when a ticket is closed?</h3>
+    <p>When you run <code>/ticket close</code>, the bot asks for confirmation. After confirming, you can optionally generate a transcript with <code>/ticket transcript</code> before the channel is archived. The ticket is marked as closed in the database.</p>
+
+    <h3>How does XP calculation work?</h3>
+    <p>Members earn 15-25 XP per message (randomized). There's a 60-second cooldown between XP gains to prevent spam grinding. The level formula is <code>level = floor(0.1 &times; &radic;xp)</code>. For example: Level 5 requires 2,500 XP, Level 10 requires 10,000 XP.</p>
 
     <h2 id="config">Configuration</h2>
     <p>All configuration is done via the <code>.env</code> file. Here is a complete reference:</p>
@@ -580,7 +685,23 @@ https://example.com/welcome-banner.png</code></pre>
       <tr><td><code>/top</code></td><td><span class="badge badge-public">Public</span></td><td>Leaderboard</td></tr>
       <tr><td><code>/xp</code></td><td><span class="badge badge-admin">Admin</span></td><td>Leveling config</td></tr>
       <tr><td><code>/poll</code></td><td><span class="badge badge-public">Public</span></td><td>Create polls</td></tr>
+      <tr><td><code>/ask</code></td><td><span class="badge badge-public">Public</span></td><td>Ask KrogieBot (AI)</td></tr>
+      <tr><td><code>/help</code></td><td><span class="badge badge-public">Public</span></td><td>Command overview</td></tr>
     </table>
+
+    <h2 id="report-issues">Report Issues</h2>
+    <p>Found a bug or have a feature request? We'd love to hear from you.</p>
+    <h3>How to Report</h3>
+    <ol>
+      <li>Go to <a href="https://github.com/Krogie/BetterGhast/issues/new" style="color:#B5C8B4">GitHub Issues</a></li>
+      <li>Choose "Bug Report" or "Feature Request"</li>
+      <li>Include as much detail as possible:</li>
+    </ol>
+    <ul>
+      <li><strong>Bug reports:</strong> What command you used, what you expected, what happened instead, any error messages</li>
+      <li><strong>Feature requests:</strong> Describe what you'd like to see, why it would be useful, and any examples</li>
+    </ul>
+    <div class="tip"><strong>Quick link:</strong> <a href="https://github.com/Krogie/BetterGhast/issues" style="color:#B5C8B4">github.com/Krogie/BetterGhast/issues</a></div>
 
     <div style="margin-top:4rem;padding:2rem 0;border-top:1px solid rgba(255,255,255,0.06);text-align:center;color:#484f58;font-size:0.85rem;">
       BetterGhast v3.0 &mdash; <a href="/" style="color:#8b949e">Home</a> &middot; <a href="https://github.com/Krogie/BetterGhast" style="color:#8b949e">GitHub</a> &middot; <a href="/terms" style="color:#8b949e">Terms</a> &middot; <a href="/privacy" style="color:#8b949e">Privacy</a>

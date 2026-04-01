@@ -1,5 +1,6 @@
 package com.krogie.betterghast
 
+import com.krogie.betterghast.community.AskService
 import com.krogie.betterghast.community.LevelingService
 import com.krogie.betterghast.community.PollService
 import com.krogie.betterghast.config.AppConfig
@@ -28,6 +29,7 @@ fun main() {
 
         // Community
         LevelingService.init(config)
+        AskService.init(config)
 
         // Background jobs
         WarningService.startDecayJob()

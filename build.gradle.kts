@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.krogie"
-version = "2.0"
+version = "3.0"
 
 repositories {
     mavenCentral()
@@ -29,6 +29,9 @@ dependencies {
 
     // Config
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
+
+    // HTTP Client (Claude API)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     // Logging
     implementation("ch.qos.logback:logback-classic:1.5.24")
