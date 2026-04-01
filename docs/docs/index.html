@@ -75,24 +75,22 @@
     /* Content wrapper */
     .content-wrapper {
       margin-left: 260px;
-      display: flex;
-      flex: 1;
+      margin-right: 340px;
     }
     .content {
       padding: 3rem 3rem;
-      max-width: 780px;
-      min-width: 0;
-      flex: 1;
+      max-width: 900px;
     }
     .right-panel {
       width: 320px;
-      flex-shrink: 0;
-      padding: 3rem 1.5rem 3rem 0;
-      position: sticky;
+      position: fixed;
       top: 0;
-      align-self: flex-start;
-      max-height: 100vh;
+      right: 0;
+      bottom: 0;
+      padding: 2rem 1.25rem;
       overflow-y: auto;
+      border-left: 1px solid rgba(255,255,255,0.06);
+      background: #0d1117;
     }
     .right-card {
       background: rgba(255,255,255,0.03);
@@ -222,6 +220,7 @@
 
     @media (max-width: 1200px) {
       .right-panel { display: none; }
+      .content-wrapper { margin-right: 0; }
       .content { max-width: 100%; }
     }
     @media (max-width: 768px) {
