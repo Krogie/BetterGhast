@@ -37,6 +37,7 @@ object WarningService {
         val expiresAt = now + decayDays.toLong() * 86400000L
 
         val warning = transaction {
+            com.krogie.betterghast.util.GuildUtil.ensureGuild(guildId)
             val id = Warnings.insert {
                 it[Warnings.guildId] = guildId
                 it[Warnings.userId] = userId

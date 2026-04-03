@@ -4,12 +4,17 @@ import com.krogie.betterghast.community.*
 import com.krogie.betterghast.config.AppConfig
 import com.krogie.betterghast.moderation.*
 import com.krogie.betterghast.tags.TagListener
+import com.krogie.betterghast.util.GuildUtil
+import dev.minn.jda.ktx.events.listener
 import dev.minn.jda.ktx.jdabuilder.light
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent
+import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
+import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.slf4j.LoggerFactory
@@ -18,6 +23,7 @@ class App(private val config: AppConfig) {
 
     private val logger = LoggerFactory.getLogger(App::class.java)
     private lateinit var jda: JDA
+    private lateinit var allCommands: List<CommandData>
 
     fun start() {
         jda = light(config.discordToken, enableCoroutines = true) {
@@ -29,8 +35,10 @@ class App(private val config: AppConfig) {
         }
 
         jda.awaitReady()
-        registerCommands(jda)
+        allCommands = buildCommands()
+        deployCommandsToAllGuilds(jda)
         registerListeners(jda)
+        registerGuildEvents(jda)
         logger.info("BetterGhast v3.0 is ready")
     }
 
@@ -54,7 +62,41 @@ class App(private val config: AppConfig) {
         AskListener.register(jda)
     }
 
-    private fun registerCommands(jda: JDA) {
+    private fun registerGuildEvents(jda: JDA) {
+        // When bot joins a new server: register commands + ensure guild in DB
+        jda.listener<GuildJoinEvent> {
+            val guild = it.guild
+            GuildUtil.ensureGuild(guild.idLong)
+            if (config.allowedGuilds.isEmpty() || guild.idLong in config.allowedGuilds) {
+                guild.updateCommands().addCommands(allCommands).queue(
+                    { logger.info("Commands deployed for new guild ${guild.id} (${guild.name})") },
+                    { err -> logger.error("Failed to deploy commands for ${guild.id}", err) }
+                )
+            }
+        }
+        // Ensure guild exists in DB when bot loads existing guilds
+        jda.listener<GuildReadyEvent> {
+            GuildUtil.ensureGuild(it.guild.idLong)
+        }
+    }
+
+    private fun deployCommandsToAllGuilds(jda: JDA) {
+        for (guild in jda.guilds) {
+            GuildUtil.ensureGuild(guild.idLong)
+            if (config.allowedGuilds.isEmpty() || guild.idLong in config.allowedGuilds) {
+                guild.updateCommands().addCommands(allCommands).queue(
+                    { logger.info("Commands deployed for ${guild.id} (${guild.name})") },
+                    { logger.error("Failed to deploy commands for ${guild.id} (${guild.name})", it) }
+                )
+            } else {
+                guild.updateCommands().queue(null) { error ->
+                    logger.error("Failed to clear commands for ${guild.id}", error)
+                }
+            }
+        }
+    }
+
+    private fun buildCommands(): List<CommandData> {
         // ── /tags (with all subcommands) ──
         val tagsCmd = Commands.slash("tags", "Manage tags for this server.")
             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_MANAGE))
@@ -215,23 +257,10 @@ class App(private val config: AppConfig) {
         val askCmd = Commands.slash("ask", "Ask KrogieBot (AI) a question about BetterGhast.")
             .addOption(OptionType.STRING, "question", "Your question.", true)
 
-        val allCommands = listOf(
+        return listOf(
             tagsCmd, autoResponseCmd, warnCmd, warningsCmd, clearWarningCmd,
             antispamCmd, welcomeCmd, rolepanelCmd, ticketCmd,
             rankCmd, topCmd, xpCmd, pollCmd, helpCmd, askCmd
         )
-
-        for (guild in jda.guilds) {
-            if (config.allowedGuilds.isEmpty() || guild.idLong in config.allowedGuilds) {
-                guild.updateCommands().addCommands(allCommands).queue(
-                    { logger.info("Commands deployed for ${guild.id} (${guild.name})") },
-                    { logger.error("Failed to deploy commands for ${guild.id} (${guild.name})", it) }
-                )
-            } else {
-                guild.updateCommands().queue(null) { error ->
-                    logger.error("Failed to clear commands for ${guild.id}", error)
-                }
-            }
-        }
     }
 }

@@ -51,6 +51,7 @@ object AutoResponseService {
         cooldownMs: Long = 30000L
     ): Long {
         val id = transaction {
+            com.krogie.betterghast.util.GuildUtil.ensureGuild(guildId)
             AutoResponses.insert {
                 it[AutoResponses.guildId] = guildId
                 it[AutoResponses.pattern] = pattern

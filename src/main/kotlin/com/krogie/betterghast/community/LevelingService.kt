@@ -94,6 +94,7 @@ object LevelingService {
         val xpGain = (baseXp * multiplier).toLong().coerceAtLeast(1)
 
         return transaction {
+            com.krogie.betterghast.util.GuildUtil.ensureGuild(guildId)
             val existing = UserLevels.selectAll().where {
                 (UserLevels.guildId eq guildId) and (UserLevels.userId eq userId)
             }.firstOrNull()

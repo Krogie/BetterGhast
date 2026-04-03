@@ -91,6 +91,7 @@ object TicketService {
     fun create(guildId: Long, channelId: Long, userId: Long, category: String = "general"): TicketData {
         val now = System.currentTimeMillis()
         return transaction {
+            com.krogie.betterghast.util.GuildUtil.ensureGuild(guildId)
             val id = Tickets.insert {
                 it[Tickets.guildId] = guildId
                 it[Tickets.channelId] = channelId
